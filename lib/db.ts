@@ -1,10 +1,21 @@
 import { formationsData, testimonialsData } from "./data";
+import { firestore } from "./firebase";
+import {
+  collection,
+  doc,
+  getDoc,
+  getDocs,
+  setDoc,
+  deleteDoc
+} from "firebase/firestore";
 
 // === TYPES ===
 
 export interface ModuleItem {
   titre: string;
   outils: string[];
+  prix?: number;
+  image?: string;
 }
 
 export interface CategorieFormations {
@@ -56,6 +67,20 @@ export interface Testimonial {
   active: boolean;
 }
 
+export interface SiteSettings {
+  apprenantsForme: number;
+  totalHeuresFormation: number;
+  tauxSatisfaction: number;
+  anneesExperience: number;
+}
+
+export interface AdminUser {
+  uid: string;
+  email: string;
+  createdAt: string;
+  status: "actif" | "suspendu";
+}
+
 // === DEFAULT DATA ===
 
 const defaultArticles: Article[] = [
@@ -63,7 +88,7 @@ const defaultArticles: Article[] = [
     id: 1,
     title: "Cérémonie de remise des certificats - Promotion 2024",
     excerpt: "Retour en images sur la cérémonie de remise des attestations aux 150 apprenants de la cohorte 2024. Un moment riche en émotions et en opportunités.",
-    content: "La grande salle de conférence de CFIG Guinée a vibré au rythme de la célébration le 15 mai dernier. En effet, la cérémonie solennelle de remise des attestations de fin de formation a réuni plus de 150 apprenants de la promotion 2024, marquant l'aboutissement de plusieurs mois d'efforts et d'apprentissage intensif.\n\nPrésidée par la direction du cabinet et en présence de nombreux invités d'honneur du secteur privé et public, cette cérémonie a été l'occasion de valoriser le travail remarquable accompli par les apprenants dans des domaines variés tels que l'Analyse de Données (PowerBI/Excel), la Gestion de la Paie, la Logistique ou encore le Community Management.\n\nLe Directeur de CFIG Guinée, M. Ousmane Condé, a tenu à féliciter chaleureusement les diplômés : \"Vous repartez aujourd'hui non seulement avec un certificat, mais avec des compétences opérationnelles concrètes et directement applicables. Le marché de l'emploi en Guinée a besoin de professionnels qualifiés et pratiques. Vous êtes désormais prêts à relever ce défi.\"\n\nPlusieurs témoignages d'apprenants et de recruteurs partenaires ont ponctué l'événement, soulignant l'impact direct des formations CFIG sur l'employabilité et la performance en entreprise. La journée s'est clôturée par un cocktail de réseautage, permettant aux nouveaux certifiés d'échanger avec les professionnels présents et d'ouvrir de nouvelles opportunités de carrière.",
+    content: "La grande salle de conférence de CFIG Guinée a vibré au rythme de la célébration le 15 mai dernier. En effet, la cérémonie solennelle de remise des attestations de fin de formation a réuni plus de 150 apprenants de la promotion 2024, marquant l'aboutissement de plusieurs mois d'efforts et d'apprentissage intensif.\n\nPrésidée par la direction du cabinet et en présence de nombreux invités d'honneur du secteur privé et public, cette cérémonie a été l'occasion de valoriser le travail remarquable accompli par les apprenants dans des domaines variés tels que l'Analyse de Données (PowerBI/Excel), la Gestion de la Paie, la Logistique ou encore le Community Management.\n\nLe Directeur de CFIG Guinée, M. Ousmane Condé, a tenu à féliciter chaleureusement les diplômés : \"Vous repartez aujourd'hui non seulement avec un certificat, mais avec des compétences opérationnelles concrètes et directement applicables. Le marché de l'emploi en Guinée a besoin de professionnels qualifiés et pratiques. Vous êtes désormais prêts à relever ce défi.\"\n\nPlusieurs témoignages d'apprenants et de recruteurs partenaires ont ponctué l'événement, soulignant l'impact direct des formations CFIG sur l'employabilité et la performance en entreprise. La journée s'est clôturée by un cocktail de réseautage, permettant aux nouveaux certifiés d'échanger avec les professionnels présents et d'ouvrir de nouvelles opportunités de carrière.",
     date: "2026-05-15",
     author: "Direction",
     category: "Événements",
@@ -135,104 +160,287 @@ const defaultMessages: ContactMessage[] = [
   }
 ];
 
-// === STORAGE INTERACTION ===
-
-const isClient = typeof window !== "undefined";
-
-function getStorageItem<T>(key: string, defaultValue: T): T {
-  if (!isClient) return defaultValue;
-  try {
-    const item = localStorage.getItem(key);
-    return item ? JSON.parse(item) : defaultValue;
-  } catch (error) {
-    console.error(`Error reading key ${key} from localStorage:`, error);
-    return defaultValue;
-  }
-}
-
-function setStorageItem<T>(key: string, value: T): void {
-  if (!isClient) return;
-  try {
-    localStorage.setItem(key, JSON.stringify(value));
-  } catch (error) {
-    console.error(`Error writing key ${key} to localStorage:`, error);
-  }
-}
-
 // === PUBLIC DATABASE API ===
 
 export const db = {
   // Formations
-  getFormations(): CategorieFormations[] {
-    return getStorageItem<CategorieFormations[]>("cfig_formations", formationsData);
+  async getFormations(): Promise<CategorieFormations[]> {
+    try {
+      const docSnap = await getDoc(doc(firestore, "formations", "all"));
+      if (docSnap.exists()) {
+        return docSnap.data().categories as CategorieFormations[];
+      }
+    } catch (error) {
+      console.error("Error fetching formations from Firestore:", error);
+    }
+    return formationsData;
   },
-  saveFormations(data: CategorieFormations[]): void {
-    setStorageItem("cfig_formations", data);
+  async saveFormations(data: CategorieFormations[]): Promise<void> {
+    try {
+      await setDoc(doc(firestore, "formations", "all"), { categories: data });
+    } catch (error) {
+      console.error("Error saving formations to Firestore:", error);
+    }
   },
 
   // Articles / Blog
-  getArticles(): Article[] {
-    return getStorageItem<Article[]>("cfig_articles", defaultArticles);
+  async getArticles(): Promise<Article[]> {
+    try {
+      const snapshot = await getDocs(collection(firestore, "articles"));
+      const list: Article[] = [];
+      snapshot.forEach((d) => {
+        list.push(d.data() as Article);
+      });
+      return list.sort((a, b) => b.id - a.id);
+    } catch (error) {
+      console.error("Error fetching articles from Firestore:", error);
+    }
+    return defaultArticles;
   },
-  saveArticles(data: Article[]): void {
-    setStorageItem("cfig_articles", data);
+  async saveArticles(data: Article[]): Promise<void> {
+    try {
+      const snapshot = await getDocs(collection(firestore, "articles"));
+      const existingIds = snapshot.docs.map(d => d.id);
+      const newIds = data.map(a => String(a.id));
+      
+      for (const id of existingIds) {
+        if (!newIds.includes(id)) {
+          await deleteDoc(doc(firestore, "articles", id));
+        }
+      }
+      
+      for (const article of data) {
+        await setDoc(doc(firestore, "articles", String(article.id)), article);
+      }
+    } catch (error) {
+      console.error("Error saving articles to Firestore:", error);
+    }
   },
 
   // Inscriptions / Devis
-  getInscriptions(): InscriptionRequest[] {
-    return getStorageItem<InscriptionRequest[]>("cfig_inscriptions", defaultInscriptions);
+  async getInscriptions(): Promise<InscriptionRequest[]> {
+    try {
+      const snapshot = await getDocs(collection(firestore, "inscriptions"));
+      const list: InscriptionRequest[] = [];
+      snapshot.forEach((d) => {
+        list.push(d.data() as InscriptionRequest);
+      });
+      return list.sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
+    } catch (error) {
+      console.error("Error fetching inscriptions from Firestore:", error);
+    }
+    return defaultInscriptions;
   },
-  saveInscriptions(data: InscriptionRequest[]): void {
-    setStorageItem("cfig_inscriptions", data);
+  async saveInscriptions(data: InscriptionRequest[]): Promise<void> {
+    try {
+      const snapshot = await getDocs(collection(firestore, "inscriptions"));
+      const existingIds = snapshot.docs.map(d => d.id);
+      const newIds = data.map(x => x.id);
+      
+      for (const id of existingIds) {
+        if (!newIds.includes(id)) {
+          await deleteDoc(doc(firestore, "inscriptions", id));
+        }
+      }
+      
+      for (const item of data) {
+        await setDoc(doc(firestore, "inscriptions", item.id), item);
+      }
+    } catch (error) {
+      console.error("Error saving inscriptions to Firestore:", error);
+    }
   },
-  addInscription(request: Omit<InscriptionRequest, "id" | "date" | "status">): InscriptionRequest {
-    const inscriptions = this.getInscriptions();
+  async addInscription(request: Omit<InscriptionRequest, "id" | "date" | "status">): Promise<InscriptionRequest> {
     const newRequest: InscriptionRequest = {
       ...request,
       id: `REG-${Math.floor(1000 + Math.random() * 9000)}`,
       date: new Date().toISOString(),
       status: "En attente"
     };
-    inscriptions.unshift(newRequest);
-    this.saveInscriptions(inscriptions);
+    try {
+      await setDoc(doc(firestore, "inscriptions", newRequest.id), newRequest);
+    } catch (error) {
+      console.error("Error adding inscription to Firestore:", error);
+    }
     return newRequest;
   },
 
   // Contact Messages
-  getMessages(): ContactMessage[] {
-    return getStorageItem<ContactMessage[]>("cfig_messages", defaultMessages);
+  async getMessages(): Promise<ContactMessage[]> {
+    try {
+      const snapshot = await getDocs(collection(firestore, "messages"));
+      const list: ContactMessage[] = [];
+      snapshot.forEach((d) => {
+        list.push(d.data() as ContactMessage);
+      });
+      return list.sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
+    } catch (error) {
+      console.error("Error fetching messages from Firestore:", error);
+    }
+    return defaultMessages;
   },
-  saveMessages(data: ContactMessage[]): void {
-    setStorageItem("cfig_messages", data);
+  async saveMessages(data: ContactMessage[]): Promise<void> {
+    try {
+      const snapshot = await getDocs(collection(firestore, "messages"));
+      const existingIds = snapshot.docs.map(d => d.id);
+      const newIds = data.map(x => x.id);
+      
+      for (const id of existingIds) {
+        if (!newIds.includes(id)) {
+          await deleteDoc(doc(firestore, "messages", id));
+        }
+      }
+      
+      for (const item of data) {
+        await setDoc(doc(firestore, "messages", item.id), item);
+      }
+    } catch (error) {
+      console.error("Error saving messages to Firestore:", error);
+    }
   },
-  addMessage(msg: Omit<ContactMessage, "id" | "date" | "status">): ContactMessage {
-    const messages = this.getMessages();
+  async addMessage(msg: Omit<ContactMessage, "id" | "date" | "status">): Promise<ContactMessage> {
     const newMsg: ContactMessage = {
       ...msg,
       id: `MSG-${Math.floor(1000 + Math.random() * 9000)}`,
       date: new Date().toISOString(),
       status: "Non lu"
     };
-    messages.unshift(newMsg);
-    this.saveMessages(messages);
+    try {
+      await setDoc(doc(firestore, "messages", newMsg.id), newMsg);
+    } catch (error) {
+      console.error("Error adding message to Firestore:", error);
+    }
     return newMsg;
   },
 
   // Testimonials
-  getTestimonials(): Testimonial[] {
-    return getStorageItem<Testimonial[]>("cfig_testimonials", defaultTestimonials);
+  async getTestimonials(): Promise<Testimonial[]> {
+    try {
+      const docSnap = await getDoc(doc(firestore, "testimonials", "all"));
+      if (docSnap.exists()) {
+        return docSnap.data().list as Testimonial[];
+      }
+    } catch (error) {
+      console.error("Error fetching testimonials from Firestore:", error);
+    }
+    return defaultTestimonials;
   },
-  saveTestimonials(data: Testimonial[]): void {
-    setStorageItem("cfig_testimonials", data);
+  async saveTestimonials(data: Testimonial[]): Promise<void> {
+    try {
+      await setDoc(doc(firestore, "testimonials", "all"), { list: data });
+    } catch (error) {
+      console.error("Error saving testimonials to Firestore:", error);
+    }
   },
 
-  // Database Initialization Helper
-  init(): void {
-    if (!isClient) return;
-    if (!localStorage.getItem("cfig_formations")) setStorageItem("cfig_formations", formationsData);
-    if (!localStorage.getItem("cfig_articles")) setStorageItem("cfig_articles", defaultArticles);
-    if (!localStorage.getItem("cfig_inscriptions")) setStorageItem("cfig_inscriptions", defaultInscriptions);
-    if (!localStorage.getItem("cfig_messages")) setStorageItem("cfig_messages", defaultMessages);
-    if (!localStorage.getItem("cfig_testimonials")) setStorageItem("cfig_testimonials", defaultTestimonials);
+  // Site Settings
+  async getSettings(): Promise<SiteSettings> {
+    try {
+      const docSnap = await getDoc(doc(firestore, "settings", "global"));
+      if (docSnap.exists()) {
+        return docSnap.data() as SiteSettings;
+      }
+    } catch (error) {
+      console.error("Error fetching settings from Firestore:", error);
+    }
+    return {
+      apprenantsForme: 540,
+      totalHeuresFormation: 1200,
+      tauxSatisfaction: 95,
+      anneesExperience: 5
+    };
+  },
+  async saveSettings(data: SiteSettings): Promise<void> {
+    try {
+      await setDoc(doc(firestore, "settings", "global"), data);
+    } catch (error) {
+      console.error("Error saving site settings to Firestore:", error);
+    }
+  },
+
+  // Admins
+  async getAdmins(): Promise<AdminUser[]> {
+    try {
+      const snapshot = await getDocs(collection(firestore, "admins"));
+      const list: AdminUser[] = [];
+      snapshot.forEach((d) => {
+        list.push(d.data() as AdminUser);
+      });
+      return list.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
+    } catch (error) {
+      console.error("Error fetching admins from Firestore:", error);
+    }
+    return [];
+  },
+  async saveAdmin(admin: AdminUser): Promise<void> {
+    try {
+      await setDoc(doc(firestore, "admins", admin.uid), admin);
+    } catch (error) {
+      console.error("Error saving admin to Firestore:", error);
+    }
+  },
+  async syncAdmin(uid: string, email: string): Promise<void> {
+    try {
+      const docRef = doc(firestore, "admins", uid);
+      const docSnap = await getDoc(docRef);
+      if (!docSnap.exists()) {
+        await setDoc(docRef, {
+          uid,
+          email,
+          createdAt: new Date().toISOString(),
+          status: "actif"
+        });
+      }
+    } catch (error) {
+      console.error("Error syncing admin in Firestore:", error);
+    }
+  },
+
+  // Database Initialization Helper with Auto-Seeding
+  async init(): Promise<void> {
+    try {
+      const docRef = doc(firestore, "formations", "all");
+      const docSnap = await getDoc(docRef);
+      
+      // Seed site settings first if they don't exist
+      const settingsRef = doc(firestore, "settings", "global");
+      const settingsSnap = await getDoc(settingsRef);
+      if (!settingsSnap.exists()) {
+        await setDoc(settingsRef, {
+          apprenantsForme: 540,
+          totalHeuresFormation: 1200,
+          tauxSatisfaction: 95,
+          anneesExperience: 5
+        });
+      }
+
+      if (!docSnap.exists()) {
+        console.log("Firestore database is empty. Seeding default CFIG data...");
+        
+        // Seed formations
+        await setDoc(docRef, { categories: formationsData });
+        
+        // Seed testimonials
+        await setDoc(doc(firestore, "testimonials", "all"), { list: defaultTestimonials });
+        
+        // Seed articles
+        for (const article of defaultArticles) {
+          await setDoc(doc(firestore, "articles", String(article.id)), article);
+        }
+        
+        // Seed inscriptions
+        for (const ins of defaultInscriptions) {
+          await setDoc(doc(firestore, "inscriptions", ins.id), ins);
+        }
+        
+        // Seed messages
+        for (const msg of defaultMessages) {
+          await setDoc(doc(firestore, "messages", msg.id), msg);
+        }
+        console.log("Firestore database successfully seeded!");
+      }
+    } catch (e) {
+      console.warn("Could not check/initialize Firestore (likely environment variables are missing or incorrect):", e);
+    }
   }
 };

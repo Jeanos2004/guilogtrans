@@ -15,20 +15,23 @@ export default function ArticleDetailPage() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    db.init();
-    const articlesList = db.getArticles();
-    const articleId = Number(params.id);
-    const foundArticle = articlesList.find((a) => a.id === articleId) || null;
-    
-    setArticle(foundArticle);
-    
-    // Recent articles excluding current one
-    const recent = articlesList
-      .filter((a) => a.id !== articleId)
-      .slice(0, 3);
-    setRecentArticles(recent);
-    
-    setLoading(false);
+    const loadArticleData = async () => {
+      await db.init();
+      const articlesList = await db.getArticles();
+      const articleId = Number(params.id);
+      const foundArticle = articlesList.find((a) => a.id === articleId) || null;
+      
+      setArticle(foundArticle);
+      
+      // Recent articles excluding current one
+      const recent = articlesList
+        .filter((a) => a.id !== articleId)
+        .slice(0, 3);
+      setRecentArticles(recent);
+      
+      setLoading(false);
+    };
+    loadArticleData();
   }, [params.id]);
 
   if (loading) {

@@ -12,8 +12,11 @@ export default function ActualitesPage() {
   const [articles, setArticles] = useState<Article[]>([]);
 
   useEffect(() => {
-    db.init();
-    setArticles(db.getArticles());
+    const loadArticles = async () => {
+      await db.init();
+      setArticles(await db.getArticles());
+    };
+    loadArticles();
   }, []);
 
   return (

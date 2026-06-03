@@ -342,9 +342,12 @@ export default function FormationDetailPage() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    db.init();
-    setFormations(db.getFormations());
-    setLoading(false);
+    const loadFormations = async () => {
+      await db.init();
+      setFormations(await db.getFormations());
+      setLoading(false);
+    };
+    loadFormations();
   }, []);
 
   const slug = params.slug as string;
@@ -401,9 +404,17 @@ export default function FormationDetailPage() {
     <>
       {/* Dynamic Header */}
       <section className="bg-[var(--color-primary)] py-16 relative overflow-hidden text-white">
-        {/* Background Subtle pattern / opacity */}
-        <div className="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/cubes.png')] opacity-10" />
-        <div className="absolute w-96 h-96 bg-[var(--color-accent)] opacity-10 rounded-full blur-3xl -top-20 -left-20"></div>
+        {/* Background — custom image if set, else subtle pattern */}
+        {activeModule.image ? (
+          <div className="absolute inset-0 overflow-hidden">
+            <img src={activeModule.image} alt={activeModule.titre} className="w-full h-full object-cover opacity-20" />
+          </div>
+        ) : (
+          <>
+            <div className="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/cubes.png')] opacity-10" />
+            <div className="absolute w-96 h-96 bg-[var(--color-accent)] opacity-10 rounded-full blur-3xl -top-20 -left-20" />
+          </>
+        )}
         
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
           <div className="mb-6">
@@ -541,6 +552,14 @@ export default function FormationDetailPage() {
                     <span className="text-gray-400 font-medium">Modalité</span>
                     <span className="font-bold text-[var(--color-primary)]">100% Pratique</span>
                   </div>
+                  {activeModule.prix !== undefined && (
+                    <div className="flex items-center justify-between text-xs py-2 border-b border-gray-50">
+                      <span className="text-gray-400 font-medium">Tarif</span>
+                      <span className="font-black text-[var(--color-accent)] text-sm">
+                        {activeModule.prix.toLocaleString('fr-GN')} GNF
+                      </span>
+                    </div>
+                  )}
                   <div className="flex items-center justify-between text-xs py-2">
                     <span className="text-gray-400 font-medium">Certification</span>
                     <span className="font-bold text-emerald-600">Attestation officielle</span>

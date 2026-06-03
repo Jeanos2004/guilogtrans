@@ -19,8 +19,7 @@ export default function ContactPage() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsSubmitting(true);
-    await new Promise(resolve => setTimeout(resolve, 800));
-    db.addMessage({
+    await db.addMessage({
       fullName: formData.fullName,
       email: formData.email,
       subject: formData.subject,

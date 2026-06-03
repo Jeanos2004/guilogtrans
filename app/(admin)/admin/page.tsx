@@ -23,22 +23,27 @@ import {
   Layers,
   Calendar,
   Users,
-  Award
+  Award,
+  Settings
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
-import { db, CategorieFormations, ModuleItem, Article, InscriptionRequest, ContactMessage, Testimonial } from "@/lib/db";
+import { db, CategorieFormations, ModuleItem, Article, InscriptionRequest, ContactMessage, Testimonial, SiteSettings, AdminUser } from "@/lib/db";
+import { auth } from "@/lib/firebase";
+import { signInWithEmailAndPassword, signOut, onAuthStateChanged, createUserWithEmailAndPassword } from "firebase/auth";
 
 export default function AdminPage() {
   const router = useRouter();
   
   // === AUTHENTICATION STATE ===
   const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [isAuthChecking, setIsAuthChecking] = useState(true);
+  const [isLoggingIn, setIsLoggingIn] = useState(false);
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [authError, setAuthError] = useState("");
   
   // === ACTIVE TAB STATE ===
-  const [activeTab, setActiveTab] = useState<"overview" | "inscriptions" | "formations" | "actualites" | "testimonials" | "messages">("overview");
+  const [activeTab, setActiveTab] = useState<"overview" | "inscriptions" | "formations" | "actualites" | "testimonials" | "messages" | "settings" | "users">("overview");
 
   // === DATA STATES ===
   const [formations, setFormations] = useState<CategorieFormations[]>([]);
@@ -46,6 +51,24 @@ export default function AdminPage() {
   const [inscriptions, setInscriptions] = useState<InscriptionRequest[]>([]);
   const [messages, setMessages] = useState<ContactMessage[]>([]);
   const [testimonials, setTestimonials] = useState<Testimonial[]>([]);
+  
+  // Settings & Admins states
+  const [settings, setSettings] = useState<SiteSettings | null>(null);
+  const [admins, setAdmins] = useState<AdminUser[]>([]);
+
+  // Settings form fields
+  const [editApprenantsForme, setEditApprenantsForme] = useState<number | string>("");
+  const [editTotalHeuresFormation, setEditTotalHeuresFormation] = useState<number | string>("");
+  const [editTauxSatisfaction, setEditTauxSatisfaction] = useState<number | string>("");
+  const [editAnneesExperience, setEditAnneesExperience] = useState<number | string>("");
+  const [settingsSuccessMsg, setSettingsSuccessMsg] = useState("");
+  const [settingsErrorMsg, setSettingsErrorMsg] = useState("");
+
+  // New admin form fields
+  const [newAdminEmail, setNewAdminEmail] = useState("");
+  const [newAdminPassword, setNewAdminPassword] = useState("");
+  const [userSuccessMsg, setUserSuccessMsg] = useState("");
+  const [userErrorMsg, setUserErrorMsg] = useState("");
 
   // === SEARCH & FILTER STATES ===
   const [searchQuery, setSearchQuery] = useState("");
@@ -56,11 +79,14 @@ export default function AdminPage() {
   const [newModuleTitle, setNewModuleTitle] = useState("");
   const [newModuleCategory, setNewModuleCategory] = useState("");
   const [newModuleOutils, setNewModuleOutils] = useState("");
+  const [newModulePrix, setNewModulePrix] = useState<number | "">("");
+  const [newModuleImage, setNewModuleImage] = useState("");
   const [editingModule, setEditingModule] = useState<{ catIndex: number; modIndex: number; oldTitle: string } | null>(null);
 
   const [showAddArticleModal, setShowAddArticleModal] = useState(false);
   const [articleTitle, setArticleTitle] = useState("");
   const [articleExcerpt, setArticleExcerpt] = useState("");
+  const [articleContent, setArticleContent] = useState("");
   const [articleCategory, setArticleCategory] = useState("");
   const [articleAuthor, setArticleAuthor] = useState("");
   const [articleImage, setArticleImage] = useState("/images/news_hero.png");
@@ -71,50 +97,177 @@ export default function AdminPage() {
 
   // === INITIALIZATION & LOAD ===
   useEffect(() => {
-    // Initialize DB with defaults
-    db.init();
-    
-    // Load from DB
-    setFormations(db.getFormations());
-    setArticles(db.getArticles());
-    setInscriptions(db.getInscriptions());
-    setMessages(db.getMessages());
-    setTestimonials(db.getTestimonials());
+    const initAndLoad = async () => {
+      await db.init();
+      setFormations(await db.getFormations());
+      setArticles(await db.getArticles());
+      setInscriptions(await db.getInscriptions());
+      setMessages(await db.getMessages());
+      setTestimonials(await db.getTestimonials());
+      
+      const siteSettings = await db.getSettings();
+      setSettings(siteSettings);
+      setEditApprenantsForme(siteSettings.apprenantsForme);
+      setEditTotalHeuresFormation(siteSettings.totalHeuresFormation);
+      setEditTauxSatisfaction(siteSettings.tauxSatisfaction);
+      setEditAnneesExperience(siteSettings.anneesExperience);
 
-    // Check if session token exists
-    const sessionToken = sessionStorage.getItem("cfig_admin_token");
-    if (sessionToken === "logged_in_token") {
-      setIsLoggedIn(true);
-    }
+      setAdmins(await db.getAdmins());
+    };
+    initAndLoad();
+
+    // Check Firebase Auth state
+    const unsubscribe = onAuthStateChanged(auth, async (user) => {
+      if (user) {
+        setIsLoggedIn(true);
+        if (user.email) {
+          await db.syncAdmin(user.uid, user.email);
+          setAdmins(await db.getAdmins());
+        }
+      } else {
+        setIsLoggedIn(false);
+      }
+      setIsAuthChecking(false);
+    });
+
+    return () => unsubscribe();
   }, []);
 
-  const handleLogin = (e: React.FormEvent) => {
+  const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (username.toLowerCase() === "admin" && password === "admin") {
-      sessionStorage.setItem("cfig_admin_token", "logged_in_token");
+    setAuthError("");
+    setIsLoggingIn(true);
+    try {
+      const userCredential = await signInWithEmailAndPassword(auth, username, password);
+      const user = userCredential.user;
+      if (user.email) {
+        await db.syncAdmin(user.uid, user.email);
+        setAdmins(await db.getAdmins());
+      }
       setIsLoggedIn(true);
-      setAuthError("");
-    } else {
-      setAuthError("Identifiants incorrects. Indice : utilisez 'admin' / 'admin'.");
+    } catch (error: any) {
+      console.error("Login error:", error);
+      let errorMsg = "Identifiants ou mot de passe incorrects.";
+      if (error.code === "auth/invalid-email") {
+        errorMsg = "Format d'adresse email invalide.";
+      } else if (error.code === "auth/user-not-found" || error.code === "auth/wrong-password") {
+        errorMsg = "Email ou mot de passe incorrect.";
+      } else if (error.code === "auth/too-many-requests") {
+        errorMsg = "Trop de tentatives de connexion échouées. Compte temporairement bloqué.";
+      } else if (error.message) {
+        errorMsg = `Erreur de connexion : ${error.message}`;
+      }
+      setAuthError(errorMsg);
+    } finally {
+      setIsLoggingIn(false);
     }
   };
 
-  const handleLogout = () => {
-    sessionStorage.removeItem("cfig_admin_token");
-    setIsLoggedIn(false);
+  const handleLogout = async () => {
+    try {
+      await signOut(auth);
+      setIsLoggedIn(false);
+    } catch (error) {
+      console.error("Logout error:", error);
+    }
   };
 
   // === DB MUTATION WRAPPERS ===
-  const refreshAllData = () => {
-    setFormations(db.getFormations());
-    setArticles(db.getArticles());
-    setInscriptions(db.getInscriptions());
-    setMessages(db.getMessages());
-    setTestimonials(db.getTestimonials());
+  const refreshAllData = async () => {
+    setFormations(await db.getFormations());
+    setArticles(await db.getArticles());
+    setInscriptions(await db.getInscriptions());
+    setMessages(await db.getMessages());
+    setTestimonials(await db.getTestimonials());
+    
+    const siteSettings = await db.getSettings();
+    setSettings(siteSettings);
+    setAdmins(await db.getAdmins());
+  };
+
+  const handleSaveSettings = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setSettingsSuccessMsg("");
+    setSettingsErrorMsg("");
+    try {
+      const updatedSettings = {
+        apprenantsForme: Number(editApprenantsForme),
+        totalHeuresFormation: Number(editTotalHeuresFormation),
+        tauxSatisfaction: Number(editTauxSatisfaction),
+        anneesExperience: Number(editAnneesExperience)
+      };
+      await db.saveSettings(updatedSettings);
+      setSettings(updatedSettings);
+      setSettingsSuccessMsg("Paramètres enregistrés avec succès !");
+    } catch (error) {
+      console.error("Error saving settings:", error);
+      setSettingsErrorMsg("Une erreur est survenue lors de l'enregistrement.");
+    }
+  };
+
+  const handleCreateAdmin = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setUserSuccessMsg("");
+    setUserErrorMsg("");
+    if (!newAdminEmail || !newAdminPassword) return;
+    if (newAdminPassword.length < 6) {
+      setUserErrorMsg("Le mot de passe doit faire au moins 6 caractères.");
+      return;
+    }
+
+    try {
+      const userCredential = await createUserWithEmailAndPassword(auth, newAdminEmail, newAdminPassword);
+      const user = userCredential.user;
+      
+      const newAdmin: AdminUser = {
+        uid: user.uid,
+        email: newAdminEmail,
+        createdAt: new Date().toISOString(),
+        status: "actif"
+      };
+      await db.saveAdmin(newAdmin);
+      setAdmins(await db.getAdmins());
+      
+      setNewAdminEmail("");
+      setNewAdminPassword("");
+      setUserSuccessMsg("Compte administrateur créé avec succès !");
+    } catch (error: any) {
+      console.error("Error creating admin:", error);
+      let errorMsg = "Erreur lors de la création du compte.";
+      if (error.code === "auth/email-already-in-use") {
+        errorMsg = "Cette adresse email est déjà utilisée.";
+      } else if (error.code === "auth/invalid-email") {
+        errorMsg = "Adresse email invalide.";
+      } else if (error.code === "auth/weak-password") {
+        errorMsg = "Le mot de passe est trop faible.";
+      }
+      setUserErrorMsg(errorMsg);
+    }
+  };
+
+  const handleToggleAdminStatus = async (uid: string) => {
+    const adminToUpdate = admins.find(a => a.uid === uid);
+    if (!adminToUpdate) return;
+    
+    if (auth.currentUser && auth.currentUser.uid === uid) {
+      alert("Vous ne pouvez pas suspendre votre propre compte !");
+      return;
+    }
+
+    const newStatus = adminToUpdate.status === "actif" ? "suspendu" : "actif";
+    if (!confirm(`Voulez-vous vraiment changer le statut de cet administrateur en '${newStatus}' ?`)) return;
+
+    try {
+      const updated = { ...adminToUpdate, status: newStatus as "actif" | "suspendu" };
+      await db.saveAdmin(updated);
+      setAdmins(await db.getAdmins());
+    } catch (error) {
+      console.error("Error updating admin status:", error);
+    }
   };
 
   // 1. Formations CRUD
-  const handleAddOrEditModule = (e: React.FormEvent) => {
+  const handleAddOrEditModule = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!newModuleTitle || !newModuleCategory) return;
 
@@ -126,7 +279,9 @@ export default function AdminPage() {
       const { catIndex, modIndex } = editingModule;
       currentFormations[catIndex].modules[modIndex] = {
         titre: newModuleTitle,
-        outils: outilsArray
+        outils: outilsArray,
+        ...(newModulePrix !== "" && { prix: Number(newModulePrix) }),
+        ...(newModuleImage.trim() && { image: newModuleImage.trim() })
       };
       setEditingModule(null);
     } else {
@@ -136,20 +291,27 @@ export default function AdminPage() {
         cat = { categorie: newModuleCategory.trim(), modules: [] };
         currentFormations.push(cat);
       }
-      cat.modules.push({ titre: newModuleTitle, outils: outilsArray });
+      cat.modules.push({
+        titre: newModuleTitle,
+        outils: outilsArray,
+        ...(newModulePrix !== "" && { prix: Number(newModulePrix) }),
+        ...(newModuleImage.trim() && { image: newModuleImage.trim() })
+      });
     }
 
-    db.saveFormations(currentFormations);
-    refreshAllData();
+    await db.saveFormations(currentFormations);
+    await refreshAllData();
     
     // Clear forms
     setNewModuleTitle("");
     setNewModuleCategory("");
     setNewModuleOutils("");
+    setNewModulePrix("");
+    setNewModuleImage("");
     setShowAddModuleModal(false);
   };
 
-  const handleDeleteModule = (catIndex: number, modIndex: number) => {
+  const handleDeleteModule = async (catIndex: number, modIndex: number) => {
     if (!confirm("Voulez-vous vraiment supprimer ce module de formation ?")) return;
     const currentFormations = [...formations];
     currentFormations[catIndex].modules.splice(modIndex, 1);
@@ -159,8 +321,8 @@ export default function AdminPage() {
       currentFormations.splice(catIndex, 1);
     }
 
-    db.saveFormations(currentFormations);
-    refreshAllData();
+    await db.saveFormations(currentFormations);
+    await refreshAllData();
   };
 
   const startEditModule = (catIndex: number, modIndex: number) => {
@@ -168,23 +330,25 @@ export default function AdminPage() {
     setNewModuleTitle(mod.titre);
     setNewModuleCategory(formations[catIndex].categorie);
     setNewModuleOutils(mod.outils.join(", "));
+    setNewModulePrix(mod.prix ?? "");
+    setNewModuleImage(mod.image ?? "");
     setEditingModule({ catIndex, modIndex, oldTitle: mod.titre });
     setShowAddModuleModal(true);
   };
 
   // 2. Inscriptions Actions
-  const handleUpdateInscriptionStatus = (id: string, status: "En attente" | "Validé" | "Annulé") => {
+  const handleUpdateInscriptionStatus = async (id: string, status: "En attente" | "Validé" | "Annulé") => {
     const list = [...inscriptions];
     const item = list.find(x => x.id === id);
     if (item) {
       item.status = status;
-      db.saveInscriptions(list);
-      refreshAllData();
+      await db.saveInscriptions(list);
+      await refreshAllData();
     }
   };
 
   // 3. Articles (Blog) CRUD
-  const handleAddOrEditArticle = (e: React.FormEvent) => {
+  const handleAddOrEditArticle = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!articleTitle || !articleExcerpt) return;
 
@@ -194,7 +358,7 @@ export default function AdminPage() {
       // Edit
       currentArticles = currentArticles.map(a => 
         a.id === editingArticleId
-          ? { ...a, title: articleTitle, excerpt: articleExcerpt, category: articleCategory, author: articleAuthor, image: articleImage }
+          ? { ...a, title: articleTitle, excerpt: articleExcerpt, content: articleContent, category: articleCategory, author: articleAuthor, image: articleImage }
           : a
       );
       setEditingArticleId(null);
@@ -204,6 +368,7 @@ export default function AdminPage() {
         id: currentArticles.length > 0 ? Math.max(...currentArticles.map(a => a.id)) + 1 : 1,
         title: articleTitle,
         excerpt: articleExcerpt,
+        content: articleContent,
         date: new Date().toISOString().split("T")[0],
         author: articleAuthor || "Direction",
         category: articleCategory || "Actualités",
@@ -212,12 +377,13 @@ export default function AdminPage() {
       currentArticles.unshift(newArticle);
     }
 
-    db.saveArticles(currentArticles);
-    refreshAllData();
+    await db.saveArticles(currentArticles);
+    await refreshAllData();
 
     // Clear forms
     setArticleTitle("");
     setArticleExcerpt("");
+    setArticleContent("");
     setArticleCategory("");
     setArticleAuthor("");
     setArticleImage("/images/news_hero.png");
@@ -227,6 +393,7 @@ export default function AdminPage() {
   const startEditArticle = (article: Article) => {
     setArticleTitle(article.title);
     setArticleExcerpt(article.excerpt);
+    setArticleContent(article.content || "");
     setArticleCategory(article.category);
     setArticleAuthor(article.author);
     setArticleImage(article.image);
@@ -234,37 +401,37 @@ export default function AdminPage() {
     setShowAddArticleModal(true);
   };
 
-  const handleDeleteArticle = (id: number) => {
+  const handleDeleteArticle = async (id: number) => {
     if (!confirm("Voulez-vous vraiment supprimer cet article de blog ?")) return;
     const currentArticles = articles.filter(a => a.id !== id);
-    db.saveArticles(currentArticles);
-    refreshAllData();
+    await db.saveArticles(currentArticles);
+    await refreshAllData();
   };
 
   // 4. Testimonials toggle active
-  const handleToggleTestimonial = (index: number) => {
+  const handleToggleTestimonial = async (index: number) => {
     const list = [...testimonials];
     list[index].active = !list[index].active;
-    db.saveTestimonials(list);
-    refreshAllData();
+    await db.saveTestimonials(list);
+    await refreshAllData();
   };
 
   // 5. Contact Messages mark as read
-  const handleMarkMessageRead = (id: string) => {
+  const handleMarkMessageRead = async (id: string) => {
     const list = [...messages];
     const msg = list.find(m => m.id === id);
     if (msg) {
       msg.status = "Lu";
-      db.saveMessages(list);
-      refreshAllData();
+      await db.saveMessages(list);
+      await refreshAllData();
     }
   };
 
-  const handleDeleteMessage = (id: string) => {
+  const handleDeleteMessage = async (id: string) => {
     if (!confirm("Voulez-vous vraiment supprimer ce message ?")) return;
     const list = messages.filter(m => m.id !== id);
-    db.saveMessages(list);
-    refreshAllData();
+    await db.saveMessages(list);
+    await refreshAllData();
   };
 
   // === RENDERING UTILITIES ===
@@ -273,6 +440,7 @@ export default function AdminPage() {
   const pendingInscriptionsCount = inscriptions.filter(x => x.status === "En attente").length;
   const unreadMessagesCount = messages.filter(x => x.status === "Non lu").length;
   const modulesCount = formations.reduce((acc, cat) => acc + cat.modules.length, 0);
+  const validatedInscriptionsCount = inscriptions.filter(x => x.status === "Validé").length;
 
   // Filter registrations
   const filteredInscriptions = inscriptions.filter(item => {
@@ -281,13 +449,24 @@ export default function AdminPage() {
                           item.id.toLowerCase().includes(searchQuery.toLowerCase());
     const matchesStatus = statusFilter === "Tous" || item.status === statusFilter;
     return matchesSearch && matchesStatus;
-  });
+  }); 
 
   // Filter messages
   const filteredMessages = messages.filter(item => 
     item.fullName.toLowerCase().includes(searchQuery.toLowerCase()) || 
     item.message.toLowerCase().includes(searchQuery.toLowerCase())
   );
+
+  if (isAuthChecking) {
+    return (
+      <div className="min-h-screen bg-[var(--color-primary)] flex items-center justify-center p-4 font-sans text-white">
+        <div className="text-center space-y-4">
+          <div className="w-12 h-12 border-4 border-[var(--color-accent)] border-t-transparent rounded-full animate-spin mx-auto"></div>
+          <p className="text-xs uppercase tracking-widest text-gray-300">Chargement de la session...</p>
+        </div>
+      </div>
+    );
+  }
 
   if (!isLoggedIn) {
     return (
@@ -312,12 +491,12 @@ export default function AdminPage() {
 
           <form onSubmit={handleLogin} className="space-y-5">
             <div>
-              <label className="block text-xs font-bold uppercase tracking-wider text-gray-200 mb-1.5">Identifiant *</label>
+              <label className="block text-xs font-bold uppercase tracking-wider text-gray-200 mb-1.5">Adresse Email *</label>
               <input
-                type="text"
+                type="email"
                 required
                 className="w-full bg-white/5 border border-white/20 px-4 py-3 text-sm text-white focus:outline-none focus:border-[var(--color-accent)] focus:ring-1 focus:ring-[var(--color-accent)] transition-all rounded-none"
-                placeholder="Entrez votre identifiant"
+                placeholder="Ex: admin@cfigguinee.com"
                 value={username}
                 onChange={(e) => setUsername(e.target.value)}
               />
@@ -341,15 +520,16 @@ export default function AdminPage() {
 
             <button
               type="submit"
-              className="w-full py-3 bg-[var(--color-accent)] hover:bg-[var(--color-light)] text-white text-xs font-bold uppercase tracking-wider transition-all duration-300 shadow-md flex items-center justify-center gap-2 rounded-none"
+              disabled={isLoggingIn}
+              className="w-full py-3 bg-[var(--color-accent)] hover:bg-[var(--color-light)] text-white text-xs font-bold uppercase tracking-wider transition-all duration-300 shadow-md flex items-center justify-center gap-2 rounded-none disabled:opacity-50 disabled:cursor-not-allowed"
             >
-              <Lock className="w-4 h-4" /> Se connecter
+              <Lock className="w-4 h-4" /> {isLoggingIn ? "Connexion en cours..." : "Se connecter"}
             </button>
           </form>
 
           <div className="mt-8 text-center pt-6 border-t border-white/10">
             <p className="text-xs text-gray-400">
-              💡 Preview active : utilisez <code className="text-white bg-white/10 px-1 py-0.5 rounded font-bold">admin</code> / <code className="text-white bg-white/10 px-1 py-0.5 rounded font-bold">admin</code>
+              🔒 Sécurisé par Firebase Authentication
             </p>
           </div>
         </motion.div>
@@ -358,12 +538,12 @@ export default function AdminPage() {
   }
 
   return (
-    <div className="min-h-screen bg-[var(--color-gray)] flex font-sans text-gray-800">
+    <div className="h-screen bg-[var(--color-gray)] flex font-sans text-gray-800 overflow-hidden">
       
       {/* ================================================
           1. SIDEBAR NAVIGATION
       ================================================ */}
-      <aside className="w-64 bg-[var(--color-primary)] text-white flex flex-col flex-shrink-0 z-20">
+      <aside className="w-64 h-full bg-[var(--color-primary)] text-white flex flex-col flex-shrink-0 z-20 sticky top-0">
         {/* Brand header */}
         <div className="p-6 border-b border-white/10 flex items-center gap-3">
           <div className="w-10 h-10 bg-[var(--color-accent)] flex items-center justify-center font-heading font-black text-lg tracking-wider text-white shadow">
@@ -383,7 +563,9 @@ export default function AdminPage() {
             { id: "formations", label: "Formations & Modules", icon: <BookOpen className="w-4 h-4" /> },
             { id: "actualites", label: "Blog & Actualités", icon: <FileText className="w-4 h-4" /> },
             { id: "testimonials", label: "Témoignages Alumni", icon: <MessageSquare className="w-4 h-4" /> },
-            { id: "messages", label: "Messages de Contact", icon: <Mail className="w-4 h-4" />, badge: unreadMessagesCount }
+            { id: "messages", label: "Messages de Contact", icon: <Mail className="w-4 h-4" />, badge: unreadMessagesCount },
+            { id: "users", label: "Utilisateurs Admin", icon: <Users className="w-4 h-4" /> },
+            { id: "settings", label: "Paramètres", icon: <Settings className="w-4 h-4" /> }
           ].map((tab) => (
             <button
               key={tab.id}
@@ -425,7 +607,7 @@ export default function AdminPage() {
       {/* ================================================
           2. MAIN CONTENT AREA
       ================================================ */}
-      <main className="flex-grow flex flex-col min-h-screen overflow-y-auto">
+      <main className="flex-grow flex flex-col h-full overflow-y-auto">
         {/* Header */}
         <header className="bg-white border-b border-gray-200 px-8 py-5 flex items-center justify-between sticky top-0 z-10 shadow-sm">
           <div>
@@ -436,6 +618,8 @@ export default function AdminPage() {
               {activeTab === "actualites" && "Éditeur du Blog & Actualités"}
               {activeTab === "testimonials" && "Gestion des Témoignages"}
               {activeTab === "messages" && "Messages clients"}
+              {activeTab === "users" && "Utilisateurs Admin"}
+              {activeTab === "settings" && "Paramètres du Site"}
             </h2>
             <p className="text-xs text-gray-500 mt-0.5">Bienvenue dans l'interface de contrôle du cabinet CFIG Guinée.</p>
           </div>
@@ -465,7 +649,7 @@ export default function AdminPage() {
                 {/* Stats Grid */}
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
                   {[
-                    { title: "Apprenants Formés", val: "542", desc: "Total cumulé", icon: <Users className="w-5 h-5 text-[var(--color-accent)]" /> },
+                    { title: "Apprenants Formés", val: ((settings?.apprenantsForme || 540) + validatedInscriptionsCount).toString(), desc: "Total cumulé", icon: <Users className="w-5 h-5 text-[var(--color-accent)]" /> },
                     { title: "Modules Actifs", val: modulesCount.toString(), desc: "Répartis sur 8 catégories", icon: <BookOpen className="w-5 h-5 text-[var(--color-accent)]" /> },
                     { title: "Demandes en Attente", val: pendingInscriptionsCount.toString(), desc: "Besoin de validation", icon: <GraduationCap className="w-5 h-5 text-amber-500" />, warning: pendingInscriptionsCount > 0 },
                     { title: "Nouveaux Messages", val: unreadMessagesCount.toString(), desc: "Formulaires de contact", icon: <Mail className="w-5 h-5 text-red-500" />, alert: unreadMessagesCount > 0 }
@@ -737,6 +921,8 @@ export default function AdminPage() {
                       setNewModuleTitle("");
                       setNewModuleCategory("");
                       setNewModuleOutils("");
+                      setNewModulePrix("");
+                      setNewModuleImage("");
                       setShowAddModuleModal(true);
                     }}
                     className="flex items-center gap-2 px-4 py-2 bg-[var(--color-primary)] hover:bg-[var(--color-accent)] text-white text-xs font-bold uppercase tracking-wider transition-colors"
@@ -762,21 +948,41 @@ export default function AdminPage() {
                       <div className="p-4 flex-grow divide-y divide-gray-100">
                         {cat.modules.map((mod, modIdx) => (
                           <div key={modIdx} className="py-3 flex items-start justify-between gap-4 group">
-                            <div className="max-w-[280px]">
-                              <h4 className="font-bold text-xs text-gray-800">{mod.titre}</h4>
-                              <div className="flex flex-wrap gap-1 mt-1.5">
-                                {mod.outils && mod.outils.length > 0 ? (
-                                  mod.outils.map((o, oi) => (
-                                    <span key={oi} className="px-1.5 py-0.5 bg-gray-100 text-gray-600 text-[8px] font-semibold border border-gray-200">
-                                      {o}
-                                    </span>
-                                  ))
-                                ) : (
-                                  <span className="text-[9px] text-gray-400 italic">Concepts métiers</span>
+                            <div className="flex items-start gap-3 min-w-0">
+                              {/* Miniature image */}
+                              {mod.image ? (
+                                <img
+                                  src={mod.image}
+                                  alt={mod.titre}
+                                  className="w-14 h-10 object-cover flex-shrink-0 border border-gray-200"
+                                  onError={(e) => { (e.target as HTMLImageElement).style.display = 'none'; }}
+                                />
+                              ) : (
+                                <div className="w-14 h-10 flex-shrink-0 bg-gray-100 border border-gray-200 flex items-center justify-center">
+                                  <BookOpen className="w-4 h-4 text-gray-300" />
+                                </div>
+                              )}
+                              <div className="min-w-0">
+                                <h4 className="font-bold text-xs text-gray-800 leading-snug">{mod.titre}</h4>
+                                {mod.prix !== undefined && (
+                                  <span className="inline-block mt-1 text-[9px] font-bold text-[var(--color-accent)] bg-orange-50 border border-orange-200 px-1.5 py-0.5">
+                                    {mod.prix.toLocaleString('fr-GN')} GNF
+                                  </span>
                                 )}
+                                <div className="flex flex-wrap gap-1 mt-1.5">
+                                  {mod.outils && mod.outils.length > 0 ? (
+                                    mod.outils.map((o, oi) => (
+                                      <span key={oi} className="px-1.5 py-0.5 bg-gray-100 text-gray-600 text-[8px] font-semibold border border-gray-200">
+                                        {o}
+                                      </span>
+                                    ))
+                                  ) : (
+                                    <span className="text-[9px] text-gray-400 italic">Concepts métiers</span>
+                                  )}
+                                </div>
                               </div>
                             </div>
-                            <div className="flex items-center gap-1 opacity-60 group-hover:opacity-100 transition-opacity">
+                            <div className="flex items-center gap-1 opacity-60 group-hover:opacity-100 transition-opacity flex-shrink-0">
                               <button
                                 onClick={() => startEditModule(catIdx, modIdx)}
                                 className="p-1 text-gray-500 hover:text-[var(--color-accent)]"
@@ -1013,6 +1219,203 @@ export default function AdminPage() {
               </motion.div>
             )}
 
+            {/* ====================================
+                TAB: SETTINGS
+            ==================================== */}
+            {activeTab === "settings" && (
+              <motion.div
+                key="settings"
+                initial={{ opacity: 0, y: 15 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0 }}
+                className="space-y-6 max-w-2xl"
+              >
+                <div className="bg-white border border-gray-200 p-8 shadow-sm">
+                  <h3 className="text-sm font-bold uppercase tracking-wider text-[var(--color-primary)] mb-6 border-b border-gray-100 pb-3">Paramètres globaux du site</h3>
+                  
+                  <form onSubmit={handleSaveSettings} className="space-y-5">
+                    <div>
+                      <label className="block text-xs font-bold uppercase tracking-wider text-gray-500 mb-1.5">Nombre de base - Apprenants Formés *</label>
+                      <input
+                        type="number"
+                        required
+                        className="w-full bg-gray-50 border border-gray-300 px-4 py-2.5 text-xs focus:outline-none focus:border-[var(--color-primary)] rounded-none"
+                        placeholder="Ex: 540"
+                        value={editApprenantsForme}
+                        onChange={(e) => setEditApprenantsForme(e.target.value)}
+                      />
+                      <p className="text-[10px] text-gray-400 mt-1">
+                        Ce nombre est additionné aux inscriptions validées de la base de données pour afficher le total des apprenants formés.
+                      </p>
+                    </div>
+
+                    <div>
+                      <label className="block text-xs font-bold uppercase tracking-wider text-gray-500 mb-1.5">Total Heures de Formation *</label>
+                      <input
+                        type="number"
+                        required
+                        className="w-full bg-gray-50 border border-gray-300 px-4 py-2.5 text-xs focus:outline-none focus:border-[var(--color-primary)] rounded-none"
+                        placeholder="Ex: 1200"
+                        value={editTotalHeuresFormation}
+                        onChange={(e) => setEditTotalHeuresFormation(e.target.value)}
+                      />
+                    </div>
+
+                    <div>
+                      <label className="block text-xs font-bold uppercase tracking-wider text-gray-500 mb-1.5">Taux de Satisfaction (%) *</label>
+                      <input
+                        type="number"
+                        required
+                        min="0"
+                        max="100"
+                        className="w-full bg-gray-50 border border-gray-300 px-4 py-2.5 text-xs focus:outline-none focus:border-[var(--color-primary)] rounded-none"
+                        placeholder="Ex: 95"
+                        value={editTauxSatisfaction}
+                        onChange={(e) => setEditTauxSatisfaction(e.target.value)}
+                      />
+                    </div>
+
+                    <div>
+                      <label className="block text-xs font-bold uppercase tracking-wider text-gray-500 mb-1.5">Années d'Expérience *</label>
+                      <input
+                        type="number"
+                        required
+                        className="w-full bg-gray-50 border border-gray-300 px-4 py-2.5 text-xs focus:outline-none focus:border-[var(--color-primary)] rounded-none"
+                        placeholder="Ex: 5"
+                        value={editAnneesExperience}
+                        onChange={(e) => setEditAnneesExperience(e.target.value)}
+                      />
+                    </div>
+
+                    {settingsSuccessMsg && (
+                      <p className="text-green-700 text-xs font-semibold bg-green-50 p-3 border border-green-200">{settingsSuccessMsg}</p>
+                    )}
+                    {settingsErrorMsg && (
+                      <p className="text-red-700 text-xs font-semibold bg-red-50 p-3 border border-red-200">{settingsErrorMsg}</p>
+                    )}
+
+                    <button
+                      type="submit"
+                      className="px-6 py-3 bg-[var(--color-primary)] text-white text-xs font-bold uppercase tracking-wider hover:bg-[var(--color-accent)] transition-colors rounded-none"
+                    >
+                      Enregistrer les modifications
+                    </button>
+                  </form>
+                </div>
+              </motion.div>
+            )}
+
+            {/* ====================================
+                TAB: USERS (ADMIN MANAGEMENT)
+            ==================================== */}
+            {activeTab === "users" && (
+              <motion.div
+                key="users"
+                initial={{ opacity: 0, y: 15 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0 }}
+                className="space-y-8"
+              >
+                <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                  {/* Create Admin Form */}
+                  <div className="bg-white border border-gray-200 p-6 shadow-sm h-fit">
+                    <h3 className="text-sm font-bold uppercase tracking-wider text-[var(--color-primary)] mb-5 border-b border-gray-100 pb-3">Créer un Administrateur</h3>
+                    
+                    <form onSubmit={handleCreateAdmin} className="space-y-4">
+                      <div>
+                        <label className="block text-xs font-bold uppercase tracking-wider text-gray-500 mb-1.5">Adresse email *</label>
+                        <input
+                          type="email"
+                          required
+                          className="w-full bg-gray-50 border border-gray-300 px-4 py-2 text-xs focus:outline-none focus:border-[var(--color-primary)] rounded-none"
+                          placeholder="admin@cfigguinee.com"
+                          value={newAdminEmail}
+                          onChange={(e) => setNewAdminEmail(e.target.value)}
+                        />
+                      </div>
+
+                      <div>
+                        <label className="block text-xs font-bold uppercase tracking-wider text-gray-500 mb-1.5">Mot de passe (min 6 car.) *</label>
+                        <input
+                          type="password"
+                          required
+                          className="w-full bg-gray-50 border border-gray-300 px-4 py-2 text-xs focus:outline-none focus:border-[var(--color-primary)] rounded-none"
+                          placeholder="••••••••"
+                          value={newAdminPassword}
+                          onChange={(e) => setNewAdminPassword(e.target.value)}
+                        />
+                      </div>
+
+                      {userSuccessMsg && (
+                        <p className="text-green-700 text-xs font-semibold bg-green-50 p-3 border border-green-200">{userSuccessMsg}</p>
+                      )}
+                      {userErrorMsg && (
+                        <p className="text-red-700 text-xs font-semibold bg-red-50 p-3 border border-red-200">{userErrorMsg}</p>
+                      )}
+
+                      <button
+                        type="submit"
+                        className="w-full py-3 bg-[var(--color-primary)] hover:bg-[var(--color-accent)] text-white text-xs font-bold uppercase tracking-wider transition-all duration-300 shadow-md flex items-center justify-center gap-2 rounded-none"
+                      >
+                        <Plus className="w-4 h-4" /> Créer le compte
+                      </button>
+                    </form>
+                  </div>
+
+                  {/* Admin List */}
+                  <div className="bg-white border border-gray-200 p-6 shadow-sm lg:col-span-2">
+                    <h3 className="text-sm font-bold uppercase tracking-wider text-[var(--color-primary)] mb-5 border-b border-gray-100 pb-3">Comptes Administrateurs</h3>
+                    
+                    <div className="overflow-x-auto">
+                      <table className="w-full text-left border-collapse">
+                        <thead>
+                          <tr className="bg-gray-50 border-b border-gray-200 text-[10px] font-bold uppercase tracking-wider text-gray-400">
+                            <th className="py-3 px-4">Email</th>
+                            <th className="py-3 px-4">Créé le</th>
+                            <th className="py-3 px-4 text-center">Statut</th>
+                            <th className="py-3 px-4 text-right">Actions</th>
+                          </tr>
+                        </thead>
+                        <tbody className="divide-y divide-gray-100 text-xs font-medium">
+                          {admins.map((adm) => (
+                            <tr key={adm.uid} className={`hover:bg-gray-50 transition-colors ${adm.status === "suspendu" ? "opacity-60 bg-gray-50" : ""}`}>
+                              <td className="py-3 px-4 font-bold text-[var(--color-primary)]">{adm.email}</td>
+                              <td className="py-3 px-4 text-gray-500">
+                                {new Date(adm.createdAt).toLocaleDateString("fr-FR", { day: "numeric", month: "short", year: "numeric", hour: "2-digit", minute: "2-digit" })}
+                              </td>
+                              <td className="py-3 px-4 text-center">
+                                <span className={`text-[9px] font-bold px-2 py-0.5 uppercase tracking-wider ${
+                                  adm.status === "actif" ? "bg-green-100 text-green-700" : "bg-red-100 text-red-700"
+                                }`}>
+                                  {adm.status}
+                                </span>
+                              </td>
+                              <td className="py-3 px-4 text-right">
+                                {auth.currentUser?.uid !== adm.uid ? (
+                                  <button
+                                    onClick={() => handleToggleAdminStatus(adm.uid)}
+                                    className={`px-2.5 py-1 text-[9px] font-bold uppercase tracking-wider border ${
+                                      adm.status === "actif" 
+                                        ? "bg-red-50 text-red-700 border-red-200 hover:bg-red-100" 
+                                        : "bg-green-50 text-green-700 border-green-200 hover:bg-green-100"
+                                    }`}
+                                  >
+                                    {adm.status === "actif" ? "Suspendre" : "Activer"}
+                                  </button>
+                                ) : (
+                                  <span className="text-[10px] text-gray-400 italic">Mon compte</span>
+                                )}
+                              </td>
+                            </tr>
+                          ))}
+                        </tbody>
+                      </table>
+                    </div>
+                  </div>
+                </div>
+              </motion.div>
+            )}
+
           </AnimatePresence>
         </div>
       </main>
@@ -1076,6 +1479,48 @@ export default function AdminPage() {
                   onChange={(e) => setNewModuleOutils(e.target.value)}
                 />
               </div>
+
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-xs font-bold uppercase tracking-wider text-gray-500 mb-1.5">
+                    Prix (GNF) <span className="text-gray-400 normal-case font-normal">— Optionnel</span>
+                  </label>
+                  <input
+                    type="number"
+                    min="0"
+                    step="1000"
+                    className="w-full bg-gray-50 border border-gray-300 px-4 py-2 text-xs focus:outline-none focus:border-[var(--color-primary)] rounded-none"
+                    placeholder="Ex: 500000"
+                    value={newModulePrix}
+                    onChange={(e) => setNewModulePrix(e.target.value === "" ? "" : Number(e.target.value))}
+                  />
+                </div>
+                <div>
+                  <label className="block text-xs font-bold uppercase tracking-wider text-gray-500 mb-1.5">
+                    Image <span className="text-gray-400 normal-case font-normal">— URL optionnelle</span>
+                  </label>
+                  <input
+                    type="url"
+                    className="w-full bg-gray-50 border border-gray-300 px-4 py-2 text-xs focus:outline-none focus:border-[var(--color-primary)] rounded-none"
+                    placeholder="https://..."
+                    value={newModuleImage}
+                    onChange={(e) => setNewModuleImage(e.target.value)}
+                  />
+                </div>
+              </div>
+
+              {/* Image preview */}
+              {newModuleImage && (
+                <div className="border border-gray-200 p-2 bg-gray-50">
+                  <p className="text-[9px] uppercase tracking-wider font-bold text-gray-400 mb-1.5">Aperçu de l'image</p>
+                  <img
+                    src={newModuleImage}
+                    alt="Aperçu"
+                    className="h-28 w-full object-cover border border-gray-200"
+                    onError={(e) => { (e.target as HTMLImageElement).style.display = 'none'; }}
+                  />
+                </div>
+              )}
 
               <div className="pt-4 flex justify-end gap-2 border-t border-gray-100 mt-6">
                 <button
@@ -1171,14 +1616,26 @@ export default function AdminPage() {
               </div>
 
               <div>
-                <label className="block text-xs font-bold uppercase tracking-wider text-gray-500 mb-1.5">Contenu / Extrait *</label>
+                <label className="block text-xs font-bold uppercase tracking-wider text-gray-500 mb-1.5">Description / Extrait court *</label>
                 <textarea
-                  rows={4}
+                  rows={2}
                   required
                   className="w-full bg-gray-50 border border-gray-300 px-4 py-2 text-xs focus:outline-none focus:border-[var(--color-primary)] rounded-none"
-                  placeholder="Rédigez le texte court ou l'extrait de l'article..."
+                  placeholder="Rédigez un court résumé de l'article..."
                   value={articleExcerpt}
                   onChange={(e) => setArticleExcerpt(e.target.value)}
+                ></textarea>
+              </div>
+
+              <div>
+                <label className="block text-xs font-bold uppercase tracking-wider text-gray-500 mb-1.5">Contenu de l'article (Texte complet) *</label>
+                <textarea
+                  rows={6}
+                  required
+                  className="w-full bg-gray-50 border border-gray-300 px-4 py-2 text-xs focus:outline-none focus:border-[var(--color-primary)] rounded-none"
+                  placeholder="Rédigez le contenu complet de l'article (utilisez des sauts de ligne doubles pour séparer les paragraphes)..."
+                  value={articleContent}
+                  onChange={(e) => setArticleContent(e.target.value)}
                 ></textarea>
               </div>
 

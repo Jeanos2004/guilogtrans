@@ -7,6 +7,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { ArrowRight, CheckCircle2, Star, GraduationCap, BookOpen, Users, Award, ChevronLeft, ChevronRight } from "lucide-react";
 import { SectionTitle } from "@/components/SectionTitle";
 import { formationsData, statsData, testimonialsData } from "@/lib/data";
+import { db } from "@/lib/db";
 
 // === Hero Slider Data (Schule-style) ===
 const heroSlides = [
@@ -61,7 +62,37 @@ const statIcons = [
 export default function Home() {
   const [current, setCurrent] = useState(0);
   const [isAutoPlaying, setIsAutoPlaying] = useState(true);
-  const featuredFormations = formationsData.slice(0, 6);
+  const [formations, setFormations] = useState<any[]>(formationsData);
+  const [testimonials, setTestimonials] = useState<any[]>(testimonialsData.map(t => ({ ...t, active: true })));
+  const [settings, setSettings] = useState<any>(null);
+  const [validatedInscriptionsCount, setValidatedInscriptionsCount] = useState(0);
+
+  const featuredFormations = formations.slice(0, 6);
+
+  useEffect(() => {
+    const loadDynamicData = async () => {
+      await db.init();
+      
+      const loadedFormations = await db.getFormations();
+      if (loadedFormations && loadedFormations.length > 0) {
+        setFormations(loadedFormations);
+      }
+      
+      const loadedTestimonials = await db.getTestimonials();
+      if (loadedTestimonials && loadedTestimonials.length > 0) {
+        setTestimonials(loadedTestimonials.filter((t: any) => t.active));
+      }
+      
+      const loadedSettings = await db.getSettings();
+      setSettings(loadedSettings);
+      
+      const loadedInscriptions = await db.getInscriptions();
+      if (loadedInscriptions) {
+        setValidatedInscriptionsCount(loadedInscriptions.filter((x: any) => x.status === "Validé").length);
+      }
+    };
+    loadDynamicData();
+  }, []);
 
   const next = useCallback(() => {
     setCurrent((c) => (c + 1) % heroSlides.length);
@@ -77,6 +108,13 @@ export default function Home() {
     const id = setInterval(next, 5000);
     return () => clearInterval(id);
   }, [next, isAutoPlaying]);
+
+  const dynamicStats = [
+    { value: settings ? `${settings.apprenantsForme + validatedInscriptionsCount}+` : "500+", label: "Apprenants formés" },
+    { value: formations.length > 0 ? `${formations.length}` : "8", label: "Domaines de formation" },
+    { value: settings ? `${settings.totalHeuresFormation}+` : "1200+", label: "Heures dispensées" },
+    { value: settings ? `${settings.tauxSatisfaction}%` : "95%", label: "De satisfaction" }
+  ];
 
   return (
     <>
@@ -204,7 +242,7 @@ export default function Home() {
       <section className="bg-[var(--color-primary)] py-0">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="grid grid-cols-2 md:grid-cols-4 border-t border-white/10">
-            {statsData.map((stat, index) => (
+            {dynamicStats.map((stat, index) => (
               <motion.div
                 key={index}
                 initial={{ opacity: 0, y: 20 }}
@@ -294,7 +332,7 @@ export default function Home() {
                     </h3>
 
                     <ul className="space-y-2 mb-6 flex-grow">
-                      {formation.modules.slice(0, 3).map((mod, i) => (
+                      {formation.modules.slice(0, 3).map((mod: any, i: number) => (
                         <li key={i} className="flex items-start text-sm text-gray-600">
                           <CheckCircle2 className="w-4 h-4 text-[var(--color-accent)] mr-2 flex-shrink-0 mt-0.5" />
                           <span>{mod.titre}</span>
@@ -353,7 +391,9 @@ export default function Home() {
               />
               {/* Stats badge — Schule style floating box */}
               <div className="absolute bottom-6 right-6 bg-[var(--color-primary)] text-white p-5 shadow-xl">
-                <div className="text-3xl font-heading font-bold">500+</div>
+                <div className="text-3xl font-heading font-bold">
+                  {settings ? settings.apprenantsForme + validatedInscriptionsCount : 500}+
+                </div>
                 <div className="text-xs font-sans uppercase tracking-widest text-white/70 mt-1">
                   Professionnels formés
                 </div>
@@ -429,7 +469,7 @@ export default function Home() {
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            {testimonialsData.map((testimonial, index) => (
+            {testimonials.map((testimonial, index) => (
               <motion.div
                 key={index}
                 initial={{ opacity: 0, y: 20 }}

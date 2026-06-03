@@ -28,8 +28,12 @@ function InscriptionForm() {
   const [categories, setCategories] = useState<string[]>([]);
 
   useEffect(() => {
-    db.init();
-    setCategories(db.getFormations().map((f) => f.categorie));
+    const loadCategories = async () => {
+      await db.init();
+      const formations = await db.getFormations();
+      setCategories(formations.map((f) => f.categorie));
+    };
+    loadCategories();
   }, []);
 
   const {
@@ -61,8 +65,7 @@ function InscriptionForm() {
   }, [initialDomain, initialModule, reset]);
 
   const onSubmit = async (data: FormData) => {
-    await new Promise((resolve) => setTimeout(resolve, 800));
-    db.addInscription({
+    await db.addInscription({
       fullName: data.fullName,
       email: data.email,
       phone: data.phone,

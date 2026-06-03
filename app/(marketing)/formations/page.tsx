@@ -32,8 +32,11 @@ export default function FormationsPage() {
   const [formations, setFormations] = useState<any[]>([]);
 
   useEffect(() => {
-    db.init();
-    setFormations(db.getFormations());
+    const loadFormations = async () => {
+      await db.init();
+      setFormations(await db.getFormations());
+    };
+    loadFormations();
   }, []);
 
   const categories = ["Tous", ...Array.from(new Set(formations.map((f) => f.categorie)))];
@@ -105,7 +108,7 @@ export default function FormationsPage() {
           <motion.div layout className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             <AnimatePresence mode="popLayout">
               {filteredFormations.map((formation: any) => {
-                const imageSrc = categoryImages[formation.categorie] || "/images/gallery.png";
+                const imageSrc = formation.image || categoryImages[formation.categorie] || "/images/gallery.png";
                 return (
                   <motion.div
                     key={formation.slug}
@@ -142,11 +145,18 @@ export default function FormationsPage() {
 
                       <div className="h-px w-full bg-gray-100 mb-4" />
 
-                      {/* Tools */}
+                      {/* Tools + Price row */}
                       <div className="mb-5">
-                        <div className="flex items-center gap-1.5 text-xs font-bold text-gray-600 mb-2">
-                          <Layers className="w-3.5 h-3.5 text-gray-400" />
-                          Outils :
+                        <div className="flex items-center justify-between mb-2">
+                          <div className="flex items-center gap-1.5 text-xs font-bold text-gray-600">
+                            <Layers className="w-3.5 h-3.5 text-gray-400" />
+                            Outils :
+                          </div>
+                          {formation.prix !== undefined && (
+                            <span className="text-xs font-black text-[var(--color-accent)] bg-orange-50 border border-orange-200 px-2 py-0.5">
+                              {formation.prix.toLocaleString('fr-GN')} GNF
+                            </span>
+                          )}
                         </div>
                         {formation.outils && formation.outils.length > 0 ? (
                           <div className="flex flex-wrap gap-1.5">
@@ -162,7 +172,7 @@ export default function FormationsPage() {
                         ) : (
                           <div className="flex items-center gap-1.5 text-xs text-gray-500 italic">
                             <CheckCircle2 className="w-3.5 h-3.5 text-[var(--color-accent)]" />
-                            Théorie & pratique métier
+                            Théorie &amp; pratique métier
                           </div>
                         )}
                       </div>

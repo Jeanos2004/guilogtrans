@@ -12,9 +12,12 @@ export default function TemoignagesPage() {
   const [testimonials, setTestimonials] = useState<Testimonial[]>([]);
 
   useEffect(() => {
-    db.init();
-    // Only show active testimonials
-    setTestimonials(db.getTestimonials().filter(t => t.active));
+    const loadTestimonials = async () => {
+      await db.init();
+      const list = await db.getTestimonials();
+      setTestimonials(list.filter(t => t.active));
+    };
+    loadTestimonials();
   }, []);
 
   return (
