@@ -59,6 +59,9 @@ const statIcons = [
   <Award className="w-7 h-7 text-[var(--color-accent)]" key="award" />,
 ];
 
+// Arrondit vers le bas à la centaine inférieure : 1203 → 1200, 2560 → 2500
+const roundDown = (n: number) => Math.floor(n / 100) * 100;
+
 export default function Home() {
   const [current, setCurrent] = useState(0);
   const [isAutoPlaying, setIsAutoPlaying] = useState(true);
@@ -110,9 +113,9 @@ export default function Home() {
   }, [next, isAutoPlaying]);
 
   const dynamicStats = [
-    { value: settings ? `${settings.apprenantsForme + validatedInscriptionsCount}+` : "500+", label: "Apprenants formés" },
+    { value: settings ? `+${roundDown(settings.apprenantsForme + validatedInscriptionsCount)}` : "+500", label: "Apprenants formés" },
     { value: formations.length > 0 ? `${formations.length}` : "8", label: "Domaines de formation" },
-    { value: settings ? `${settings.totalHeuresFormation}+` : "1200+", label: "Heures dispensées" },
+    { value: settings ? `+${roundDown(settings.totalHeuresFormation)}` : "+1200", label: "Heures dispensées" },
     { value: settings ? `${settings.tauxSatisfaction}%` : "95%", label: "De satisfaction" }
   ];
 
@@ -296,7 +299,7 @@ export default function Home() {
           {/* Cards grid */}
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {featuredFormations.map((formation, index) => {
-              const imageSrc = categoryImages[formation.categorie] || "/images/gallery.png";
+              const imageSrc = formation.imageUrl || categoryImages[formation.categorie] || "/images/gallery.png";
               return (
                 <motion.div
                   key={index}
@@ -308,11 +311,10 @@ export default function Home() {
                 >
                   {/* Image header — Schule: full image top */}
                   <div className="relative h-52 overflow-hidden">
-                    <Image
+                    <img
                       src={imageSrc}
                       alt={formation.categorie}
-                      fill
-                      className="object-cover group-hover:scale-105 transition-transform duration-500"
+                      className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
                     />
                     {/* Category badge */}
                     <span className="absolute top-4 left-4 bg-[var(--color-primary)] text-white text-[10px] font-bold px-3 py-1 uppercase tracking-wider">
@@ -392,7 +394,7 @@ export default function Home() {
               {/* Stats badge — Schule style floating box */}
               <div className="absolute bottom-6 right-6 bg-[var(--color-primary)] text-white p-5 shadow-xl">
                 <div className="text-3xl font-heading font-bold">
-                  {settings ? settings.apprenantsForme + validatedInscriptionsCount : 500}+
+                  +{settings ? roundDown(settings.apprenantsForme + validatedInscriptionsCount) : 500}
                 </div>
                 <div className="text-xs font-sans uppercase tracking-widest text-white/70 mt-1">
                   Professionnels formés
