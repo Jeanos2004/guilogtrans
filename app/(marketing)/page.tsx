@@ -145,6 +145,7 @@ export default function Home() {
               src={heroSlides[current].image}
               alt={heroSlides[current].title}
               fill
+              sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
               priority
               className="object-cover"
             />
@@ -316,7 +317,7 @@ export default function Home() {
                       src={imageSrc}
                       alt={formation.categorie}
                       fill
-
+                      sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
                       priority
                       className="object-cover group-hover:scale-105 transition-transform duration-500"
                       
@@ -395,6 +396,7 @@ export default function Home() {
                 src="/images/section-about.png"
                 alt="Équipe CFIG Guinée"
                 fill
+                sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
                 className="object-cover"
               />
               {/* Stats badge — Schule style floating box */}

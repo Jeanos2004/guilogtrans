@@ -28,6 +28,7 @@ export default function TemoignagesPage() {
           alt="Témoignages CFIG Guinée"
           fill
           priority
+          sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
           className="object-cover opacity-20"
         />
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">

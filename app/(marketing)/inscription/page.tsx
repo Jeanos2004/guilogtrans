@@ -227,6 +227,7 @@ export default function InscriptionPage() {
           src="/images/inscription_hero.png"
           alt="Inscription CFIG Guinée"
           fill
+          sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
           priority
           className="object-cover opacity-20"
         />
