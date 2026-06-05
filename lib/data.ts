@@ -1,5 +1,6 @@
 export const formationsData = [
   {
+    image: "/images/programmes/bureautique.jpg",
     categorie: "Informatique Bureautique",
     modules: [
       { titre: "Initiation Bureautique", outils: ["Windows", "Word", "Excel", "PowerPoint"] },
@@ -7,6 +8,7 @@ export const formationsData = [
     ]
   },
   {
+    image: "/images/programmes/Gestion.jpg",
     categorie: "Gestion",
     modules: [
       { titre: "Gestion Comptable", outils: ["Sage Comptabilité", "Excel"] },
@@ -17,6 +19,7 @@ export const formationsData = [
     ]
   },
   {
+    image: "/images/programmes/logistique.jpg",
     categorie: "Logistique et Transport",
     modules: [
       { titre: "Responsable Logistique", outils: ["Excel"] },
@@ -26,12 +29,14 @@ export const formationsData = [
     ]
   },
   {
+    image: "/images/programmes/qhse.jpg",
     categorie: "QHSE",
     modules: [
       { titre: "Superviseur HSE", outils: [] }
     ]
   },
   {
+    image: "/images/programmes/analyse.jpg",
     categorie: "Analyse des Données",
     modules: [
       { titre: "Tableau de bord avec Excel", outils: ["Excel", "PowerPivot", "PowerQuery"] },
@@ -40,6 +45,7 @@ export const formationsData = [
     ]
   },
   {
+    image: "/images/programmes/communication.jpg",
     categorie: "Communication Digitale",
     modules: [
       { titre: "Community Management", outils: ["Facebook", "WhatsApp Business", "Canva", "ChatGPT"] },
@@ -48,12 +54,14 @@ export const formationsData = [
     ]
   },
   {
+    image: "/images/infographie.png",
     categorie: "Infographie",
     modules: [
       { titre: "Conception de Visuels", outils: ["Adobe Photoshop", "Adobe Illustrator"] }
     ]
   },
   {
+    image: "/images/suivi-evaluation.png",
     categorie: "Suivi-Évaluation de Projets",
     modules: [
       { titre: "Montage Suivi et Évaluation des Projets", outils: ["MS Project", "KoboCollect", "SPSS"] }
@@ -62,7 +70,7 @@ export const formationsData = [
 ];
 
 export const statsData = [
-  { value: "500+", label: "Apprenants formés" },
+  { value: "1200+", label: "Apprenants formés" },
   { value: "8", label: "Domaines de formation" },
   { value: "10+", label: "Experts formateurs" },
   { value: "95%", label: "De satisfaction" }

@@ -42,14 +42,14 @@ const heroSlides = [
 
 // === Category images ===
 const categoryImages: Record<string, string> = {
-  "Informatique Bureautique": "/images/gallery.png",
-  "Gestion": "/images/about.png",
-  "Logistique et Transport": "/images/hero.png",
-  "QHSE": "/images/hero.png",
-  "Analyse des Données": "/images/gallery.png",
-  "Communication Digitale": "/images/about.png",
-  "Infographie": "/images/gallery.png",
-  "Suivi-Évaluation de Projets": "/images/about.png",
+  "Informatique Bureautique": "/images/programmes/bureautique.jpg",
+  "Gestion": "/images/programmes/Gestion.jpg",
+  "Logistique et Transport": "/images/programmes/logistique.jpg",
+  "QHSE": "/images/programmes/qhse.jpg",
+  "Analyse des Données": "/images/programmes/analyse.jpg",
+  "Communication Digitale": "/images/programmes/communication.jpg",
+  "Infographie": "/images/programmes/Infographie.jpg",
+  "Suivi-Évaluation de Projets": "/images/programmes/Suivi-Evaluation.jpg",
 };
 
 const statIcons = [
@@ -299,7 +299,8 @@ export default function Home() {
           {/* Cards grid */}
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {featuredFormations.map((formation, index) => {
-              const imageSrc = formation.imageUrl || categoryImages[formation.categorie] || "/images/gallery.png";
+              const imageSrc = formation.image || categoryImages[formation.categorie] || "/images/gallery.png";
+;
               return (
                 <motion.div
                   key={index}
@@ -311,11 +312,16 @@ export default function Home() {
                 >
                   {/* Image header — Schule: full image top */}
                   <div className="relative h-52 overflow-hidden">
-                    <img
+                    <Image
                       src={imageSrc}
                       alt={formation.categorie}
-                      className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                      fill
+
+                      priority
+                      className="object-cover group-hover:scale-105 transition-transform duration-500"
+                      
                     />
+                   
                     {/* Category badge */}
                     <span className="absolute top-4 left-4 bg-[var(--color-primary)] text-white text-[10px] font-bold px-3 py-1 uppercase tracking-wider">
                       {formation.categorie}
@@ -386,7 +392,7 @@ export default function Home() {
               className="relative h-[480px] overflow-hidden"
             >
               <Image
-                src="/images/about.png"
+                src="/images/section-about.png"
                 alt="Équipe CFIG Guinée"
                 fill
                 className="object-cover"
