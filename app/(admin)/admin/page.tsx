@@ -29,10 +29,109 @@ import {
   Video
 } from "lucide-react";
 import { MediaUploader } from "@/components/admin/MediaUploader";
+import { MultiMediaUploader, MediaItem } from "@/components/admin/MultiMediaUploader";
 import { motion, AnimatePresence } from "framer-motion";
 import { db, CategorieFormations, ModuleItem, Article, InscriptionRequest, ContactMessage, Testimonial, SiteSettings, AdminUser, GalleryItem } from "@/lib/db";
 import { auth } from "@/lib/firebase";
 import { signInWithEmailAndPassword, signOut, onAuthStateChanged, createUserWithEmailAndPassword } from "firebase/auth";
+
+// ============================================================
+// GALLERY TITLE FOLDER — collapsible folder-style section by title
+// ============================================================
+const getBaseTitle = (title: string) => title.replace(/\s*\(\d+\)$/, "").trim();
+
+function GalleryTitleFolder({
+  title,
+  category,
+  items,
+  onEdit,
+  onDelete,
+}: {
+  title: string;
+  category: string;
+  items: GalleryItem[];
+  onEdit: (item: GalleryItem) => void;
+  onDelete: (id: string) => void;
+}) {
+  const [open, setOpen] = useState(true);
+
+  return (
+    <div className="bg-white border border-gray-200 shadow-sm overflow-hidden">
+      {/* Folder header */}
+      <button
+        type="button"
+        onClick={() => setOpen((o) => !o)}
+        className="w-full flex items-center justify-between px-5 py-4 hover:bg-gray-50 transition-colors"
+      >
+        <div className="flex items-center gap-3">
+          <div className="w-8 h-8 flex items-center justify-center bg-[var(--color-primary)]/10 text-[var(--color-primary)]">
+            <Layers className="w-4 h-4" />
+          </div>
+          <div className="text-left">
+            <p className="text-sm font-bold text-[var(--color-primary)]">{title}</p>
+            <p className="text-[10px] text-gray-400 uppercase tracking-widest mt-0.5">
+              {category} • {items.length} média{items.length > 1 ? "s" : ""}
+            </p>
+          </div>
+        </div>
+        <div className={`transition-transform duration-200 text-gray-400 ${open ? "rotate-90" : ""}`}>
+          <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+          </svg>
+        </div>
+      </button>
+
+      {/* Content */}
+      {open && (
+        <div className="border-t border-gray-100 p-4">
+          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-3">
+            {items.map((item) => (
+              <div
+                key={item.id}
+                className="group relative rounded-lg overflow-hidden bg-gray-100 border border-gray-200 hover:border-[var(--color-accent)] transition-colors"
+              >
+                <div className="relative aspect-video overflow-hidden bg-gray-200">
+                  {item.mediaType === "video" ? (
+                    <video src={item.mediaUrl} className="w-full h-full object-cover" preload="metadata" />
+                  ) : (
+                    <img src={item.mediaUrl} alt={item.title} className="w-full h-full object-cover" loading="lazy" />
+                  )}
+                  {/* Actions overlay */}
+                  <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-2">
+                    <button
+                      type="button"
+                      onClick={() => onEdit(item)}
+                      className="p-2 bg-white text-blue-600 rounded-full shadow-lg hover:bg-blue-50 transition-colors"
+                      title="Modifier"
+                    >
+                      <Edit3 className="w-3.5 h-3.5" />
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => onDelete(item.id)}
+                      className="p-2 bg-white text-red-600 rounded-full shadow-lg hover:bg-red-50 transition-colors"
+                      title="Supprimer"
+                    >
+                      <Trash2 className="w-3.5 h-3.5" />
+                    </button>
+                  </div>
+                  {item.mediaType === "video" && (
+                    <div className="absolute bottom-1 left-1 bg-black/70 text-white px-1.5 py-0.5 text-[9px] uppercase font-bold flex items-center gap-1 rounded-sm">
+                      <Video className="w-2.5 h-2.5" /> Vidéo
+                    </div>
+                  )}
+                </div>
+                <div className="px-2 py-1.5">
+                  <p className="text-[10px] font-semibold text-gray-700 truncate leading-tight">{item.title}</p>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
 
 export default function AdminPage() {
   const router = useRouter();
@@ -122,8 +221,7 @@ export default function AdminPage() {
   const [showAddGalleryModal, setShowAddGalleryModal] = useState(false);
   const [galleryTitle, setGalleryTitle] = useState("");
   const [galleryCategory, setGalleryCategory] = useState("");
-  const [galleryMediaUrl, setGalleryMediaUrl] = useState("");
-  const [galleryMediaType, setGalleryMediaType] = useState<"image"|"video">("image");
+  const [galleryMedia, setGalleryMedia] = useState<MediaItem[]>([]);
   const [editingGalleryId, setEditingGalleryId] = useState<string | null>(null);
 
   const [selectedRequest, setSelectedRequest] = useState<InscriptionRequest | null>(null);
@@ -502,30 +600,31 @@ export default function AdminPage() {
   // 4. Galerie CRUD
   const handleAddOrEditGallery = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!galleryTitle || !galleryCategory || !galleryMediaUrl) return;
+    if (!galleryTitle || !galleryCategory || galleryMedia.length === 0) return;
 
     let currentGallery = [...gallery];
     if (editingGalleryId) {
+      const firstMedia = galleryMedia[0];
       currentGallery = currentGallery.map(g =>
-        g.id === editingGalleryId ? { ...g, title: galleryTitle, category: galleryCategory, mediaUrl: galleryMediaUrl, mediaType: galleryMediaType } : g
+        g.id === editingGalleryId ? { ...g, title: galleryTitle, category: galleryCategory, mediaUrl: firstMedia.url, mediaType: firstMedia.type } : g
       );
     } else {
-      const newItem: GalleryItem = {
-        id: Date.now().toString(),
-        title: galleryTitle,
+      const newItems: GalleryItem[] = galleryMedia.map((media, index) => ({
+        id: Date.now().toString() + "-" + index,
+        title: galleryTitle + (galleryMedia.length > 1 ? ` (${index + 1})` : ""),
         category: galleryCategory,
-        mediaUrl: galleryMediaUrl,
-        mediaType: galleryMediaType,
+        mediaUrl: media.url,
+        mediaType: media.type,
         dateAdded: new Date().toISOString()
-      };
-      currentGallery.unshift(newItem);
+      }));
+      currentGallery = [...newItems, ...currentGallery];
     }
 
     await db.saveGallery(currentGallery);
     await refreshAllData();
     setShowAddGalleryModal(false);
     setEditingGalleryId(null);
-    setGalleryTitle(""); setGalleryCategory(""); setGalleryMediaUrl(""); setGalleryMediaType("image");
+    setGalleryTitle(""); setGalleryCategory(""); setGalleryMedia([]);
   };
 
   const handleDeleteGallery = async (id: string) => {
@@ -1282,71 +1381,67 @@ export default function AdminPage() {
                 exit={{ opacity: 0 }}
                 className="space-y-6"
               >
+                {/* Toolbar */}
                 <div className="flex justify-between items-center bg-white p-4 border border-gray-200 shadow-sm">
                   <div>
-                    <h3 className="text-sm font-bold uppercase tracking-wider text-[var(--color-primary)]">Médias de la galerie</h3>
-                    <p className="text-[10px] text-gray-400 mt-1 uppercase tracking-widest">{gallery.length} élément(s)</p>
+                    <h3 className="text-sm font-bold uppercase tracking-wider text-[var(--color-primary)]">Galerie Médias</h3>
+                    <p className="text-[10px] text-gray-400 mt-1 uppercase tracking-widest">
+                      {gallery.length} média(s) — {new Set(gallery.map(g => g.category)).size} catégorie(s)
+                    </p>
                   </div>
                   <button
                     onClick={() => {
                       setEditingGalleryId(null);
-                      setGalleryTitle(""); setGalleryCategory(""); setGalleryMediaUrl(""); setGalleryMediaType("image");
+                      setGalleryTitle(""); setGalleryCategory(""); setGalleryMedia([]);
                       setShowAddGalleryModal(true);
                     }}
                     className="px-4 py-2 bg-[var(--color-accent)] text-white text-xs font-bold uppercase tracking-wider flex items-center gap-2 hover:bg-[var(--color-primary)] transition-colors rounded-none"
                   >
-                    <Plus className="w-4 h-4" /> Ajouter un média
+                    <Plus className="w-4 h-4" /> Ajouter des médias
                   </button>
                 </div>
 
-                <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-4">
-                  {gallery.map((item) => (
-                    <div key={item.id} className="bg-white border border-gray-200 shadow-sm group">
-                      <div className="relative aspect-video overflow-hidden bg-gray-100">
-                        {item.mediaType === "video" ? (
-                          <video src={item.mediaUrl} className="w-full h-full object-cover" />
-                        ) : (
-                          <img src={item.mediaUrl} alt={item.title} className="w-full h-full object-cover" />
-                        )}
-                        <div className="absolute top-2 right-2 flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
-                          <button
-                            onClick={() => {
-                              setEditingGalleryId(item.id);
-                              setGalleryTitle(item.title);
-                              setGalleryCategory(item.category);
-                              setGalleryMediaUrl(item.mediaUrl);
-                              setGalleryMediaType(item.mediaType);
-                              setShowAddGalleryModal(true);
-                            }}
-                            className="p-1.5 bg-white text-blue-600 shadow-md hover:bg-blue-50"
-                          >
-                            <Edit3 className="w-3.5 h-3.5" />
-                          </button>
-                          <button
-                            onClick={() => handleDeleteGallery(item.id)}
-                            className="p-1.5 bg-white text-red-600 shadow-md hover:bg-red-50"
-                          >
-                            <Trash2 className="w-3.5 h-3.5" />
-                          </button>
-                        </div>
-                        {item.mediaType === "video" && (
-                          <div className="absolute top-2 left-2 bg-black/60 text-white px-2 py-0.5 text-[10px] uppercase font-bold rounded-sm flex items-center gap-1">
-                            <Video className="w-3 h-3" /> Vidéo
-                          </div>
-                        )}
-                      </div>
-                      <div className="p-4">
-                        <span className="text-[9px] uppercase tracking-wider font-bold text-[var(--color-accent)]">{item.category}</span>
-                        <h4 className="text-xs font-bold text-[var(--color-primary)] truncate mt-1">{item.title}</h4>
-                      </div>
-                    </div>
-                  ))}
-                  {gallery.length === 0 && (
-                    <div className="col-span-full py-12 text-center text-gray-500 italic bg-white border border-gray-200">
-                      Aucun média dans la galerie.
-                    </div>
-                  )}
-                </div>
+                {/* Title folders (Albums) */}
+                {gallery.length === 0 ? (
+                  <div className="py-16 text-center text-gray-400 italic bg-white border border-gray-200">
+                    <ImageIcon className="w-10 h-10 mx-auto text-gray-300 mb-3" />
+                    Aucun média dans la galerie.
+                  </div>
+                ) : (
+                  <div className="space-y-4">
+                    {(() => {
+                      // Group items by base title
+                      const grouped: Record<string, { category: string; items: GalleryItem[] }> = {};
+                      gallery.forEach(item => {
+                        const baseTitle = getBaseTitle(item.title);
+                        if (!grouped[baseTitle]) {
+                          grouped[baseTitle] = {
+                            category: item.category,
+                            items: []
+                          };
+                        }
+                        grouped[baseTitle].items.push(item);
+                      });
+
+                      return Object.entries(grouped).map(([baseTitle, group]) => (
+                        <GalleryTitleFolder
+                          key={baseTitle}
+                          title={baseTitle}
+                          category={group.category}
+                          items={group.items}
+                          onEdit={(item) => {
+                            setEditingGalleryId(item.id);
+                            setGalleryTitle(getBaseTitle(item.title));
+                            setGalleryCategory(item.category);
+                            setGalleryMedia([{ url: item.mediaUrl, type: item.mediaType }]);
+                            setShowAddGalleryModal(true);
+                          }}
+                          onDelete={handleDeleteGallery}
+                        />
+                      ));
+                    })()}
+                  </div>
+                )}
               </motion.div>
             )}
 
@@ -1962,7 +2057,7 @@ export default function AdminPage() {
           <motion.div 
             initial={{ opacity: 0, scale: 0.95 }}
             animate={{ opacity: 1, scale: 1 }}
-            className="bg-white p-8 w-full max-w-lg border border-gray-200 shadow-2xl text-gray-800 rounded-none"
+            className="bg-white p-8 w-full max-w-lg border border-gray-200 shadow-2xl text-gray-800 rounded-none max-h-[90vh] overflow-y-auto"
           >
             <div className="flex justify-between items-center mb-6 border-b border-gray-100 pb-3">
               <h3 className="text-lg font-heading font-bold text-[var(--color-primary)]">
@@ -2075,7 +2170,7 @@ export default function AdminPage() {
           <motion.div 
             initial={{ opacity: 0, scale: 0.95 }}
             animate={{ opacity: 1, scale: 1 }}
-            className="bg-white p-8 w-full max-w-lg border border-gray-200 shadow-2xl text-gray-800 rounded-none"
+            className="bg-white p-8 w-full max-w-lg border border-gray-200 shadow-2xl text-gray-800 rounded-none max-h-[90vh] overflow-y-auto"
           >
             <div className="flex justify-between items-center mb-6 border-b border-gray-100 pb-3">
               <h3 className="text-lg font-heading font-bold text-[var(--color-primary)]">
@@ -2099,24 +2194,33 @@ export default function AdminPage() {
 
               <div>
                 <label className="block text-xs font-bold uppercase tracking-wider text-gray-500 mb-1.5">Catégorie *</label>
-                <input
-                  type="text" required
+                <select
+                  required
                   className="w-full bg-gray-50 border border-gray-300 px-4 py-2 text-xs focus:outline-none focus:border-[var(--color-primary)] rounded-none"
-                  placeholder="Ex: Événements, Formations..."
                   value={galleryCategory} onChange={(e) => setGalleryCategory(e.target.value)}
-                />
+                >
+                  <option value="">Sélectionnez une catégorie...</option>
+                  <option value="Salles de cours">Salles de cours</option>
+                  <option value="Remises de certificats">Remises de certificats</option>
+                  <option value="Ateliers">Ateliers</option>
+                  <option value="Événements divers">Événements divers</option>
+                  <option value="Vie étudiante">Vie étudiante</option>
+                </select>
               </div>
 
               <div>
-                <label className="block text-xs font-bold uppercase tracking-wider text-gray-500 mb-1.5">Média (Image ou Vidéo) *</label>
-                <MediaUploader
+                <label className="block text-xs font-bold uppercase tracking-wider text-gray-500 mb-1.5">Médias (Image ou Vidéo) *</label>
+                <MultiMediaUploader
                   accept="both"
-                  value={galleryMediaUrl}
-                  onChange={(url, type) => {
-                    setGalleryMediaUrl(url);
-                    setGalleryMediaType(type);
-                  }}
-                  label="Uploader le média"
+                  values={galleryMedia}
+                  onAdd={(item) => setGalleryMedia(prev => [...prev, item])}
+                  onRemove={(index) => setGalleryMedia(prev => {
+                    const newMedia = [...prev];
+                    newMedia.splice(index, 1);
+                    return newMedia;
+                  })}
+                  label={editingGalleryId ? "Remplacer le média" : "Uploader un ou plusieurs médias"}
+                  maxFiles={editingGalleryId ? 1 : 10}
                 />
               </div>
 
@@ -2141,7 +2245,7 @@ export default function AdminPage() {
           <motion.div 
             initial={{ opacity: 0, scale: 0.95 }}
             animate={{ opacity: 1, scale: 1 }}
-            className="bg-white p-8 w-full max-w-lg border border-gray-200 shadow-2xl text-gray-800 rounded-none"
+            className="bg-white p-8 w-full max-w-lg border border-gray-200 shadow-2xl text-gray-800 rounded-none max-h-[90vh] overflow-y-auto"
           >
             <div className="flex justify-between items-center mb-6 border-b border-gray-100 pb-3">
               <div>
@@ -2244,7 +2348,7 @@ export default function AdminPage() {
           <motion.div 
             initial={{ opacity: 0, scale: 0.95 }}
             animate={{ opacity: 1, scale: 1 }}
-            className="bg-white p-8 w-full max-w-lg border border-gray-200 shadow-2xl text-gray-800 rounded-none"
+            className="bg-white p-8 w-full max-w-lg border border-gray-200 shadow-2xl text-gray-800 rounded-none max-h-[90vh] overflow-y-auto"
           >
             <div className="flex justify-between items-center mb-6 border-b border-gray-100 pb-3">
               <div>
