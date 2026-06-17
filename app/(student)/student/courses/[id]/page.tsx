@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
 import { auth } from "@/lib/firebase";
 import { User } from "firebase/auth";
-import { studentDb, StudentProfile, AVAILABLE_COURSES, StudentCourse, Lecture } from "@/lib/studentDb";
+import { studentDb, StudentProfile, StudentCourse, Lecture } from "@/lib/studentDb";
 import StudentSidebar from "@/components/student/Sidebar";
 import StudentHeader from "@/components/student/Header";
 import VideoLecturePlayer from "@/components/student/VideoLecturePlayer";
@@ -28,8 +28,7 @@ export default function StudentCoursePlayerPage() {
   const [mobileAccordion, setMobileAccordion] = useState<string | null>("overview");
   const [bookmarked, setBookmarked] = useState(false);
   const [expandedModules, setExpandedModules] = useState<Record<string, boolean>>({});
-
-  const course = AVAILABLE_COURSES.find(c => c.id === courseId);
+  const [course, setCourse] = useState<StudentCourse | null>(null);
 
   const fetchProfile = async (uid: string) => {
     const p = await studentDb.getProfile(uid);
@@ -40,14 +39,24 @@ export default function StudentCoursePlayerPage() {
     const unsub = auth.onAuthStateChanged(async (currentUser) => {
       if (currentUser) {
         setUser(currentUser);
-        await fetchProfile(currentUser.uid);
+        try {
+          const [p, list] = await Promise.all([
+            studentDb.getProfile(currentUser.uid),
+            studentDb.getCourses()
+          ]);
+          setProfile(p);
+          const foundCourse = list.find(c => c.id === courseId);
+          setCourse(foundCourse || null);
+        } catch (e) {
+          console.error("Error loading course details:", e);
+        }
       } else {
         router.push("/student/login");
       }
       setLoading(false);
     });
     return () => unsub();
-  }, [router]);
+  }, [router, courseId]);
 
   // Set first lecture active by default when course loads, and expand first module
   useEffect(() => {

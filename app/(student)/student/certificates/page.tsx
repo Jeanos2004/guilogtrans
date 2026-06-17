@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { auth } from "@/lib/firebase";
 import { User } from "firebase/auth";
-import { studentDb, StudentProfile, AVAILABLE_COURSES, StudentCourse } from "@/lib/studentDb";
+import { studentDb, StudentProfile, StudentCourse } from "@/lib/studentDb";
 import StudentSidebar from "@/components/student/Sidebar";
 import StudentHeader from "@/components/student/Header";
 import { Award, Eye, Download, ShieldCheck, X, MessageSquare, Bell } from "lucide-react";
@@ -16,13 +16,22 @@ export default function StudentCertificatesPage() {
   const [profile, setProfile] = useState<StudentProfile | null>(null);
   const [loading, setLoading] = useState(true);
   const [selectedCertCourse, setSelectedCertCourse] = useState<StudentCourse | null>(null);
+  const [courses, setCourses] = useState<StudentCourse[]>([]);
 
   useEffect(() => {
     const unsub = auth.onAuthStateChanged(async (currentUser) => {
       if (currentUser) {
         setUser(currentUser);
-        const p = await studentDb.getProfile(currentUser.uid);
-        setProfile(p);
+        try {
+          const [p, list] = await Promise.all([
+            studentDb.getProfile(currentUser.uid),
+            studentDb.getCourses()
+          ]);
+          setProfile(p);
+          setCourses(list);
+        } catch (e) {
+          console.error("Error loading certificates page data:", e);
+        }
       } else {
         router.push("/student/login");
       }
@@ -54,7 +63,7 @@ export default function StudentCertificatesPage() {
     return count;
   };
 
-  const enrolledCourses = AVAILABLE_COURSES.filter(c => profile?.enrolledCourses.includes(c.id));
+  const enrolledCourses = courses.filter(c => profile?.enrolledCourses.includes(c.id));
   
   // Filter courses that are 100% completed
   const completedCourses = enrolledCourses.filter(c => {

@@ -1,5 +1,5 @@
 import { firestore, auth } from "./firebase";
-import { doc, getDoc, setDoc } from "firebase/firestore";
+import { doc, getDoc, setDoc, getDocs, collection, deleteDoc } from "firebase/firestore";
 import { onAuthStateChanged, User } from "firebase/auth";
 
 // === TYPES ===
@@ -291,6 +291,46 @@ export const studentDb = {
       await setDoc(doc(firestore, "students", uid), profile);
     } catch (e) {
       console.error("Error toggling lecture progress:", e);
+    }
+  },
+
+  /** Fetch all courses from Firestore. Initialize with defaults if empty. */
+  async getCourses(): Promise<StudentCourse[]> {
+    try {
+      const snap = await getDocs(collection(firestore, "student_courses"));
+      if (snap.empty) {
+        // Initialize Firestore with static mock courses
+        for (const course of AVAILABLE_COURSES) {
+          await setDoc(doc(firestore, "student_courses", course.id), course);
+        }
+        return AVAILABLE_COURSES;
+      }
+      const list: StudentCourse[] = [];
+      snap.forEach((d) => {
+        list.push(d.data() as StudentCourse);
+      });
+      return list;
+    } catch (e) {
+      console.error("Error fetching courses from Firestore:", e);
+      return AVAILABLE_COURSES; // Fallback to mock data
+    }
+  },
+
+  /** Save or update a course */
+  async saveCourse(course: StudentCourse): Promise<void> {
+    try {
+      await setDoc(doc(firestore, "student_courses", course.id), course);
+    } catch (e) {
+      console.error("Error saving course to Firestore:", e);
+    }
+  },
+
+  /** Delete a course */
+  async deleteCourse(courseId: string): Promise<void> {
+    try {
+      await deleteDoc(doc(firestore, "student_courses", courseId));
+    } catch (e) {
+      console.error("Error deleting course from Firestore:", e);
     }
   }
 };

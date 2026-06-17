@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { auth } from "@/lib/firebase";
 import { User } from "firebase/auth";
-import { studentDb, StudentProfile, AVAILABLE_COURSES, StudentCourse } from "@/lib/studentDb";
+import { studentDb, StudentProfile, StudentCourse } from "@/lib/studentDb";
 import StudentSidebar from "@/components/student/Sidebar";
 import StudentHeader from "@/components/student/Header";
 import CourseProgressCard from "@/components/student/CourseProgressCard";
@@ -21,6 +21,7 @@ export default function StudentCoursesPage() {
   const [selectedCourse, setSelectedCourse] = useState<StudentCourse | null>(null);
   const [paymentOpen, setPaymentOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
+  const [courses, setCourses] = useState<StudentCourse[]>([]);
 
   const fetchProfile = async (uid: string) => {
     const p = await studentDb.getProfile(uid);
@@ -32,6 +33,12 @@ export default function StudentCoursesPage() {
       if (currentUser) {
         setUser(currentUser);
         await fetchProfile(currentUser.uid);
+        try {
+          const list = await studentDb.getCourses();
+          setCourses(list);
+        } catch (e) {
+          console.error("Error loading courses:", e);
+        }
       } else {
         router.push("/student/login");
       }
@@ -75,7 +82,7 @@ export default function StudentCoursesPage() {
   };
 
   // Filter based on search query
-  const filteredCourses = AVAILABLE_COURSES.filter(c =>
+  const filteredCourses = courses.filter(c =>
     c.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
     c.category.toLowerCase().includes(searchQuery.toLowerCase()) ||
     c.description.toLowerCase().includes(searchQuery.toLowerCase())

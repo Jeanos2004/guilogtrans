@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { auth } from "@/lib/firebase";
 import { User } from "firebase/auth";
-import { studentDb, StudentProfile, AVAILABLE_COURSES, StudentCourse } from "@/lib/studentDb";
+import { studentDb, StudentProfile, StudentCourse } from "@/lib/studentDb";
 import StudentSidebar from "@/components/student/Sidebar";
 import StudentHeader from "@/components/student/Header";
 import { GraduationCap, Award, BookOpen, MessageSquare, Bell, Search, ChevronRight, ChevronLeft, Calendar as CalendarIcon, CheckCircle, Play } from "lucide-react";
@@ -15,6 +15,7 @@ export default function StudentDashboardPage() {
   const router = useRouter();
   const [user, setUser] = useState<User | null>(null);
   const [profile, setProfile] = useState<StudentProfile | null>(null);
+  const [courses, setCourses] = useState<StudentCourse[]>([]);
   const [loading, setLoading] = useState(true);
 
   // Calendar state
@@ -32,8 +33,16 @@ export default function StudentDashboardPage() {
     const unsub = auth.onAuthStateChanged(async (currentUser) => {
       if (currentUser) {
         setUser(currentUser);
-        const p = await studentDb.getProfile(currentUser.uid);
-        setProfile(p);
+        try {
+          const [p, list] = await Promise.all([
+            studentDb.getProfile(currentUser.uid),
+            studentDb.getCourses()
+          ]);
+          setProfile(p);
+          setCourses(list);
+        } catch (e) {
+          console.error("Error loading dashboard data:", e);
+        }
       } else {
         router.push("/student/login");
       }
@@ -53,7 +62,7 @@ export default function StudentDashboardPage() {
     );
   }
 
-  const enrolledCourses = AVAILABLE_COURSES.filter(c => profile?.enrolledCourses.includes(c.id));
+  const enrolledCourses = courses.filter(c => profile?.enrolledCourses.includes(c.id));
 
   const getCompletedCount = (courseId: string) => {
     return profile?.progress[courseId]?.length || 0;

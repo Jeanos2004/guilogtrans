@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { auth } from "@/lib/firebase";
 import { User } from "firebase/auth";
-import { studentDb, StudentProfile, AVAILABLE_COURSES } from "@/lib/studentDb";
+import { studentDb, StudentProfile, StudentCourse } from "@/lib/studentDb";
 import StudentSidebar from "@/components/student/Sidebar";
 import StudentHeader from "@/components/student/Header";
 import { CreditCard, FileText, Download, CheckCircle, MessageSquare, Bell } from "lucide-react";
@@ -13,14 +13,23 @@ export default function StudentBillingPage() {
   const router = useRouter();
   const [user, setUser] = useState<User | null>(null);
   const [profile, setProfile] = useState<StudentProfile | null>(null);
+  const [courses, setCourses] = useState<StudentCourse[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const unsub = auth.onAuthStateChanged(async (currentUser) => {
       if (currentUser) {
         setUser(currentUser);
-        const p = await studentDb.getProfile(currentUser.uid);
-        setProfile(p);
+        try {
+          const [p, list] = await Promise.all([
+            studentDb.getProfile(currentUser.uid),
+            studentDb.getCourses()
+          ]);
+          setProfile(p);
+          setCourses(list);
+        } catch (e) {
+          console.error("Error loading billing data:", e);
+        }
       } else {
         router.push("/student/login");
       }
@@ -40,7 +49,7 @@ export default function StudentBillingPage() {
     );
   }
 
-  const enrolledCourses = AVAILABLE_COURSES.filter(c => profile?.enrolledCourses.includes(c.id));
+  const enrolledCourses = courses.filter(c => profile?.enrolledCourses.includes(c.id));
 
   // Format currency (GNF)
   const formatPrice = (price: number) => {
