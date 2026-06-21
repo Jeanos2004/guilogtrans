@@ -16,7 +16,9 @@ import {
   Ship,
   Rocket,
   Users,
-  Globe
+  Globe,
+  Sun,
+  LayoutGrid
 } from "lucide-react";
 
 const stats = [
@@ -463,42 +465,52 @@ export default function AboutPage() {
       </section>
 
       {/* =============== WHY CHOOSE US =============== */}
-      <section className="py-20 bg-[#F9F9F9]">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-          <span className="text-sm text-gray-500 font-semibold tracking-wider uppercase mb-2 block">Valeurs & Mission</span>
-          <h2 className="text-3xl font-heading font-bold text-[#0d2d38] mb-16">
-            Pourquoi Nous Choisir
-          </h2>
-
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-12 text-left">
-            <div>
-              <div className="flex items-center gap-3 mb-4">
-                <Target className="w-6 h-6 text-[#0d2d38]" />
-                <h3 className="font-bold text-[#0d2d38] uppercase tracking-wider text-sm">Objectifs Principaux</h3>
-              </div>
-              <p className="text-gray-500 text-sm leading-relaxed border-l-2 border-[#0d2d38] pl-4">
-                Renforcer les compétences locales et optimiser la rentabilité des entreprises à travers des stratégies logistiques éprouvées.
-              </p>
+      <section className="py-24 bg-[#F2F5F9]">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="text-center mb-16">
+            <span className="text-sm text-gray-500 font-medium tracking-wide mb-3 block">Rendre l'impossible possible</span>
+            <h2 className="text-4xl md:text-5xl font-heading font-bold text-[var(--color-primary)] mb-6">
+              Pourquoi Nous Choisir
+            </h2>
+            <div className="flex items-center justify-center gap-2">
+              <div className="w-16 h-[1.5px] bg-[var(--color-accent)]" />
+              <Truck className="w-6 h-6 text-[var(--color-accent)]" strokeWidth={1.5} />
+              <div className="w-16 h-[1.5px] bg-[var(--color-accent)]" />
             </div>
-            
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-10 lg:gap-16">
+            {/* Core Objectives */}
             <div>
-              <div className="flex items-center gap-3 mb-4">
-                <Eye className="w-6 h-6 text-[#0d2d38]" />
-                <h3 className="font-bold text-[#0d2d38] uppercase tracking-wider text-sm">Mission & Vision</h3>
+              <h3 className="text-2xl font-bold text-[var(--color-primary)] mb-8">Objectifs Principaux</h3>
+              <div className="flex gap-6">
+                <Target className="w-14 h-14 text-[var(--color-primary)] flex-shrink-0" strokeWidth={1.2} />
+                <p className="text-[14px] text-gray-500 leading-relaxed">
+                  Former les professionnels avec des méthodes pratiques et certifiantes. Auditer et optimiser vos processus pour une rentabilité maximale.
+                </p>
               </div>
-              <p className="text-gray-500 text-sm leading-relaxed border-l-2 border-[#0d2d38] pl-4">
-                Devenir le cabinet de référence en Afrique de l'Ouest pour la formation et le conseil en supply chain.
-              </p>
             </div>
 
+            {/* Mission & Vision */}
             <div>
-              <div className="flex items-center gap-3 mb-4">
-                <Award className="w-6 h-6 text-[#0d2d38]" />
-                <h3 className="font-bold text-[#0d2d38] uppercase tracking-wider text-sm">Nos Valeurs</h3>
+              <h3 className="text-2xl font-bold text-[var(--color-primary)] mb-8">Mission & Vision</h3>
+              <div className="flex gap-6">
+                <Sun className="w-14 h-14 text-[var(--color-primary)] flex-shrink-0" strokeWidth={1.2} />
+                <p className="text-[14px] text-gray-500 leading-relaxed">
+                  Devenir le partenaire privilégié des entreprises en Guinée pour bâtir des chaînes logistiques résilientes, compétitives et durables.
+                </p>
               </div>
-              <p className="text-gray-500 text-sm leading-relaxed border-l-2 border-[#0d2d38] pl-4">
-                Excellence opérationnelle, intégrité, approche pratique et accompagnement continu de nos clients.
-              </p>
+            </div>
+
+            {/* Our Values */}
+            <div>
+              <h3 className="text-2xl font-bold text-[var(--color-primary)] mb-8">Nos Valeurs</h3>
+              <div className="flex gap-6">
+                <LayoutGrid className="w-14 h-14 text-[var(--color-primary)] flex-shrink-0" strokeWidth={1.2} />
+                <p className="text-[14px] text-gray-500 leading-relaxed">
+                  Excellence, intégrité, innovation et transfert de compétences. Nous plaçons la réussite de nos clients au cœur de nos actions.
+                </p>
+              </div>
             </div>
           </div>
         </div>

@@ -16,11 +16,11 @@ const categoryLabels: Record<string, string> = {
 };
 
 const categoryColors: Record<string, string> = {
-  "transport": "bg-rouge text-white",
-  "logistique": "bg-[#FCD116] text-gray-900",
-  "supply-chain": "bg-accent text-white",
-  "douane": "bg-vert text-white",
-  "securite": "bg-vert text-white"
+  "transport": "bg-[var(--color-primary)] text-white",
+  "logistique": "bg-[var(--color-accent)] text-white",
+  "supply-chain": "bg-[#0d343c] text-white",
+  "douane": "bg-[var(--color-primary)] text-white",
+  "securite": "bg-[var(--color-accent)] text-white"
 };
 
 const categoryImages: Record<string, string> = {
@@ -59,20 +59,20 @@ export default function FormationsPage() {
   return (
     <>
       {/* PAGE HERO */}
-      <section className="bg-primary py-20 relative overflow-hidden text-white">
-        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,rgba(255,255,255,0.1),transparent)] opacity-25" />
+      <section className="relative bg-[var(--color-primary)] pt-32 pb-24 overflow-hidden">
+        <div className="absolute top-0 right-0 w-1/2 h-full opacity-10 pointer-events-none" style={{ backgroundImage: 'radial-gradient(#ffffff 1px, transparent 1px)', backgroundSize: '24px 24px' }} />
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
           <motion.div initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.4 }}>
-            {/* Breadcrumb */}
-            <div className="flex items-center text-[10px] font-bold uppercase tracking-widest text-white/60 mb-4 gap-2">
+            <div className="flex items-center text-xs font-bold uppercase tracking-widest text-[var(--color-accent)] mb-5 gap-2">
               <Link href="/" className="hover:text-white transition-colors">Accueil</Link>
-              <ChevronRight className="w-3.5 h-3.5 text-secondary" />
-              <span className="text-secondary">Formations</span>
+              <ChevronRight className="w-4 h-4" />
+              <span>Formations</span>
             </div>
-            <h1 className="text-3xl md:text-5xl font-heading font-black uppercase tracking-tight mb-4">
+            <h1 className="text-4xl md:text-5xl font-heading font-bold text-white mb-6">
               Nos Formations Certifiantes
             </h1>
-            <p className="text-white/70 max-w-xl font-sans text-xs sm:text-sm leading-relaxed">
+            <div className="w-20 h-1 bg-[var(--color-accent)] mb-8" />
+            <p className="text-white/70 text-[15px] leading-relaxed max-w-2xl font-sans">
               Des programmes de formation 100% pratiques conçus pour acquérir les compétences réelles demandées par les recruteurs du secteur logistique & transport.
             </p>
           </motion.div>
@@ -173,7 +173,7 @@ export default function FormationsPage() {
                         <div className="pt-6 border-t border-gray-100 flex items-center justify-between mt-6">
                           <div className="flex flex-col">
                             <span className="text-[9px] uppercase tracking-wider font-bold text-gray-400">Tarif</span>
-                            <span className="text-sm font-black text-rouge">
+                            <span className="text-sm font-black text-[var(--color-primary)]">
                               {formation.tarif.toLocaleString('fr-GN')} GNF
                             </span>
                           </div>
@@ -186,7 +186,7 @@ export default function FormationsPage() {
                             </Link>
                             <Link
                               href={`/contact?subject=Inscription - ${encodeURIComponent(formation.titre)}`}
-                              className="bg-primary hover:bg-rouge text-white font-bold text-[10px] uppercase tracking-wider px-3 py-2 transition-colors"
+                              className="bg-[var(--color-primary)] hover:bg-[var(--color-accent)] text-white font-bold text-[10px] uppercase tracking-wider px-3 py-2 transition-colors"
                             >
                               S'inscrire
                             </Link>

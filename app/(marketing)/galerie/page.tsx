@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import Image from "next/image";
+import { SectionTitle } from "@/components/SectionTitle";
 import {
   ChevronRight,
   Play,
@@ -123,35 +124,22 @@ export default function GaleriePage() {
   return (
     <>
       {/* =============== HERO =============== */}
-      <section className="relative bg-[#0d2d38] pt-32 pb-24 overflow-hidden">
-        {/* Airplane Graphic (Right side) */}
-        <div className="absolute right-0 top-0 bottom-0 w-1/2 opacity-80 pointer-events-none transform translate-x-12 -translate-y-4">
-          <Image
-            src="https://images.unsplash.com/photo-1436491865332-7a61a109cc05?q=80&w=1200&fit=crop&auto=format"
-            alt="Airplane flying"
-            fill
-            priority
-            className="object-cover mix-blend-screen mask-image-to-l"
-            style={{ WebkitMaskImage: 'linear-gradient(to right, transparent, black 40%)', maskImage: 'linear-gradient(to right, transparent, black 40%)' }}
-          />
-        </div>
-        
-        {/* Decorative elements */}
-        <div className="absolute inset-0 overflow-hidden pointer-events-none">
-          <div className="absolute -top-32 -right-32 w-96 h-96 rounded-full bg-[var(--color-accent)]/10 blur-3xl" />
-          <div className="absolute -bottom-20 -left-20 w-64 h-64 rounded-full bg-white/5 blur-3xl" />
-        </div>
-
-        <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center mt-8">
-          <motion.div initial={{ opacity: 0, y: 30 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6 }}>
-            <h1 className="text-5xl md:text-6xl font-heading font-bold text-white leading-tight mb-4 tracking-tight">
-              Gallery
-            </h1>
-            <div className="flex items-center justify-center text-sm text-white/80 font-medium">
-              <Link href="/" className="hover:text-[var(--color-accent)] transition-colors">Accueil</Link>
-              <ChevronRight className="w-4 h-4 mx-2 opacity-60" />
-              <span className="text-white">Galerie</span>
+      <section className="relative bg-[var(--color-primary)] pt-32 pb-24 overflow-hidden">
+        <div className="absolute top-0 right-0 w-1/2 h-full opacity-10 pointer-events-none" style={{ backgroundImage: 'radial-gradient(#ffffff 1px, transparent 1px)', backgroundSize: '24px 24px' }} />
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+          <motion.div initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.4 }}>
+            <div className="flex items-center text-xs font-bold uppercase tracking-widest text-[var(--color-accent)] mb-5 gap-2">
+              <Link href="/" className="hover:text-white transition-colors">Accueil</Link>
+              <ChevronRight className="w-4 h-4" />
+              <span>Galerie</span>
             </div>
+            <h1 className="text-4xl md:text-5xl font-heading font-bold text-white mb-6">
+              Notre Galerie
+            </h1>
+            <div className="w-20 h-1 bg-[var(--color-accent)] mb-8" />
+            <p className="text-white/70 text-[15px] leading-relaxed max-w-2xl font-sans">
+              Revivez en images les moments forts de nos formations, audits et événements.
+            </p>
           </motion.div>
         </div>
       </section>
@@ -160,10 +148,7 @@ export default function GaleriePage() {
       <section className="py-20 bg-white min-h-screen">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           
-          <div className="text-center mb-16">
-            <h2 className="text-3xl font-bold text-[#0d2d38] mb-4">Découvrez Notre Galerie</h2>
-            <div className="w-12 h-0.5 bg-[var(--color-accent)] mx-auto" />
-          </div>
+          <SectionTitle title="Découvrez Notre Galerie" centered />
 
           {/* ---- Category Filter Tabs ---- */}
           {!isLoading && items.length > 0 && !selectedAlbum && (
@@ -178,8 +163,8 @@ export default function GaleriePage() {
                     onClick={() => setActiveCategory(cat)}
                     className={`flex items-center gap-2 px-5 py-2.5 text-xs font-bold uppercase tracking-wider transition-all duration-200 border ${
                       activeCategory === cat
-                        ? "bg-[#0d2d38] text-white border-[#0d2d38] shadow-md"
-                        : "bg-white text-gray-500 border-gray-200 hover:border-[#0d2d38] hover:text-[#0d2d38]"
+                        ? "bg-[var(--color-primary)] text-white border-[var(--color-primary)] shadow-md"
+                        : "bg-white text-gray-500 border-gray-200 hover:border-[var(--color-primary)] hover:text-[var(--color-primary)]"
                     }`}
                   >
                     {cat !== "Tous" && (

@@ -21,23 +21,22 @@ export default function ActualitesPage() {
 
   return (
     <>
-      <section className="bg-[var(--color-primary)] py-20 relative overflow-hidden">
-        <Image
-          src="/images/news_hero.png"
-          alt="Actualités & Blog Cabinet Guilogtrans"
-          fill
-          sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
-          priority
-          className="object-cover opacity-20"
-        />
+      <section className="relative bg-[var(--color-primary)] pt-32 pb-24 overflow-hidden">
+        <div className="absolute top-0 right-0 w-1/2 h-full opacity-10 pointer-events-none" style={{ backgroundImage: 'radial-gradient(#ffffff 1px, transparent 1px)', backgroundSize: '24px 24px' }} />
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
-          <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}>
-            <h1 className="text-4xl md:text-5xl font-heading font-bold text-white mb-4">Actualités & Blog</h1>
-            <div className="flex items-center text-sm text-gray-300">
+          <motion.div initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.4 }}>
+            <div className="flex items-center text-xs font-bold uppercase tracking-widest text-[var(--color-accent)] mb-5 gap-2">
               <Link href="/" className="hover:text-white transition-colors">Accueil</Link>
-              <ChevronRight className="w-4 h-4 mx-2" />
-              <span className="text-[var(--color-accent)]">Actualités</span>
+              <ChevronRight className="w-4 h-4" />
+              <span>Actualités</span>
             </div>
+            <h1 className="text-4xl md:text-5xl font-heading font-bold text-white mb-6">
+              Actualités & Blog
+            </h1>
+            <div className="w-20 h-1 bg-[var(--color-accent)] mb-8" />
+            <p className="text-white/70 text-[15px] leading-relaxed max-w-2xl font-sans">
+              Restez informés des derniers événements, des nouvelles formations et découvrez les conseils de nos experts en logistique.
+            </p>
           </motion.div>
         </div>
       </section>
@@ -58,7 +57,7 @@ export default function ActualitesPage() {
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
                 transition={{ delay: index * 0.1 }}
-                className="bg-white rounded-xl shadow-md overflow-hidden hover:shadow-xl transition-all flex flex-col group border border-gray-100"
+                className="bg-white border border-gray-200 shadow-sm hover:shadow-md transition-shadow flex flex-col group"
               >
                 <Link href={`/actualites/${article.id}`} className="block h-48 bg-gray-200 relative overflow-hidden">
                   <Image 
@@ -70,7 +69,7 @@ export default function ActualitesPage() {
                   />
                   <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
                   <div className="absolute top-4 left-4 z-10">
-                    <span className="px-3 py-1 bg-[var(--color-accent)] text-white text-xs font-bold rounded-full shadow-sm">
+                    <span className="px-3 py-1.5 bg-[var(--color-accent)] text-white text-[10px] uppercase tracking-widest font-bold shadow-sm">
                       {article.category}
                     </span>
                   </div>
@@ -107,7 +106,7 @@ export default function ActualitesPage() {
           </div>
           
           <div className="mt-16 text-center">
-            <button className="px-8 py-3 border-2 border-[var(--color-primary)] text-[var(--color-primary)] rounded-md font-medium hover:bg-[var(--color-primary)] hover:text-white transition-colors">
+            <button className="px-8 py-3.5 border border-[var(--color-primary)] text-[var(--color-primary)] font-bold text-[13px] uppercase tracking-wider hover:bg-[var(--color-primary)] hover:text-white transition-colors">
               Charger plus d'articles
             </button>
           </div>

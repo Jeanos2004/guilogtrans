@@ -23,11 +23,11 @@ const services = [
     icon: Briefcase,
     title: "Conseil Stratégique",
     subtitle: "Optimisation & Performance logistique",
-    color: "rouge",
-    borderColor: "border-t-rouge",
-    iconBg: "bg-rouge/10",
-    iconColor: "text-rouge",
-    badgeColor: "bg-rouge text-white",
+    color: "accent",
+    borderColor: "border-t-[var(--color-accent)]",
+    iconBg: "bg-[var(--color-primary)]",
+    iconColor: "text-white",
+    badgeColor: "bg-[var(--color-accent)] text-white",
     description:
       "Notre équipe d'experts accompagne vos équipes dans l'optimisation complète de votre chaîne logistique. Nous analysons vos flux physiques, diagnostiquons vos points de blocage et proposons des solutions mesurables adaptées à la réalité guinéenne.",
     prestations: [
@@ -48,11 +48,11 @@ const services = [
     icon: Layers,
     title: "Études & Audits",
     subtitle: "Diagnostics chiffrés & Recommandations",
-    color: "or",
-    borderColor: "border-t-[#F5A623]",
-    iconBg: "bg-[#F5A623]/10",
-    iconColor: "text-[#F5A623]",
-    badgeColor: "bg-[#F5A623] text-gray-900",
+    color: "accent",
+    borderColor: "border-t-[var(--color-accent)]",
+    iconBg: "bg-[var(--color-primary)]",
+    iconColor: "text-white",
+    badgeColor: "bg-[var(--color-accent)] text-white",
     description:
       "Nous réalisons des études et audits approfondis de vos processus logistiques et de transport. De l'analyse des coûts opérationnels à la cartographie complète de vos flux, nos diagnostics vous fournissent des données précises pour éclairer vos décisions stratégiques.",
     prestations: [
@@ -73,11 +73,11 @@ const services = [
     icon: GraduationCap,
     title: "Formation Professionnelle",
     subtitle: "Montée en compétences & Certification",
-    color: "vert",
-    borderColor: "border-t-vert",
-    iconBg: "bg-vert/10",
-    iconColor: "text-vert",
-    badgeColor: "bg-vert text-white",
+    color: "accent",
+    borderColor: "border-t-[var(--color-accent)]",
+    iconBg: "bg-[var(--color-primary)]",
+    iconColor: "text-white",
+    badgeColor: "bg-[var(--color-accent)] text-white",
     description:
       "Nos programmes de formation sont conçus par des praticiens du terrain pour répondre aux besoins réels des opérateurs guinéens. 100% pratiques, animés par des experts certifiés, ils couvrent l'ensemble des métiers de la logistique, du transport et du commerce international.",
     prestations: [
@@ -106,32 +106,20 @@ export default function ServicesPage() {
   return (
     <>
       {/* ===== HERO ===== */}
-      <section className="bg-primary py-24 relative overflow-hidden text-white">
-        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,rgba(255,255,255,0.08),transparent)] opacity-40" />
-        <div className="absolute top-0 left-0 w-full h-[4px] flex">
-          <div className="w-1/3 h-full bg-[#CE1126]" />
-          <div className="w-1/3 h-full bg-[#FCD116]" />
-          <div className="w-1/3 h-full bg-[#009460]" />
-        </div>
+      <section className="relative bg-[var(--color-primary)] pt-32 pb-24 overflow-hidden">
+        <div className="absolute top-0 right-0 w-1/2 h-full opacity-10 pointer-events-none" style={{ backgroundImage: 'radial-gradient(#ffffff 1px, transparent 1px)', backgroundSize: '24px 24px' }} />
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
           <motion.div initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.4 }}>
-            <div className="flex items-center text-[10px] font-bold uppercase tracking-widest text-white/60 mb-5 gap-2">
+            <div className="flex items-center text-xs font-bold uppercase tracking-widest text-[var(--color-accent)] mb-5 gap-2">
               <Link href="/" className="hover:text-white transition-colors">Accueil</Link>
-              <ChevronRight className="w-3.5 h-3.5 text-secondary" />
-              <span className="text-secondary">Services</span>
+              <ChevronRight className="w-4 h-4" />
+              <span>Services</span>
             </div>
-            <h1 className="text-4xl md:text-5xl font-heading font-black uppercase tracking-tight mb-4">
-              Nos Services
+            <h1 className="text-4xl md:text-5xl font-heading font-bold text-white mb-6">
+              Nos Domaines d'Expertise
             </h1>
-            <div className="flex items-center gap-2 mb-5">
-              <span className="w-2 h-2 rounded-full bg-[#CE1126]" />
-              <span className="w-2 h-2 rounded-full bg-[#FCD116]" />
-              <span className="w-2 h-2 rounded-full bg-[#009460]" />
-              <span className="text-xs uppercase font-bold tracking-widest text-white/80 ml-1">
-                Conseil · Études · Formation
-              </span>
-            </div>
-            <p className="text-white/70 text-sm leading-relaxed max-w-2xl font-sans">
+            <div className="w-20 h-1 bg-[var(--color-accent)] mb-8" />
+            <p className="text-white/70 text-[15px] leading-relaxed max-w-2xl font-sans">
               Trois piliers d'expertise au service de l'efficacité logistique en Guinée. 
               Des solutions concrètes, mesurables et adaptées à votre secteur d'activité.
             </p>
@@ -177,16 +165,10 @@ export default function ServicesPage() {
                   <div className="mt-8">
                     <Link
                       href="/contact"
-                      className={`inline-flex items-center gap-2 px-5 py-3 text-[11px] font-bold uppercase tracking-wider transition-colors ${
-                        index === 0
-                          ? "bg-rouge text-white hover:bg-primary"
-                          : index === 1
-                          ? "bg-[#F5A623] text-gray-900 hover:bg-primary hover:text-white"
-                          : "bg-vert text-white hover:bg-primary"
-                      }`}
+                      className="inline-flex items-center gap-2 px-6 py-3.5 text-xs font-bold uppercase tracking-wider transition-colors bg-[var(--color-primary)] text-white hover:bg-[var(--color-accent)]"
                     >
                       Demander un devis
-                      <ArrowRight className="w-3.5 h-3.5" />
+                      <ArrowRight className="w-4 h-4" />
                     </Link>
                   </div>
                 </div>
@@ -222,13 +204,15 @@ export default function ServicesPage() {
       <section className="py-20 bg-surface">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-16">
-            <span className="inline-flex items-center text-primary text-[10px] font-black uppercase tracking-widest mb-3">
-              <span className="w-6 h-[2px] bg-primary mr-2" />
-              Comment ça marche
-            </span>
-            <h2 className="text-2xl md:text-3xl font-heading font-black text-gray-900 uppercase">
+            <span className="text-sm text-gray-500 font-medium tracking-wide mb-3 block">Notre Méthodologie</span>
+            <h2 className="text-4xl md:text-5xl font-heading font-bold text-[var(--color-primary)] mb-6">
               Notre Processus d'Intervention
             </h2>
+            <div className="flex items-center justify-center gap-2">
+              <div className="w-16 h-[1.5px] bg-[var(--color-accent)]" />
+              <Truck className="w-6 h-6 text-[var(--color-accent)]" strokeWidth={1.5} />
+              <div className="w-16 h-[1.5px] bg-[var(--color-accent)]" />
+            </div>
           </div>
           <div className="grid grid-cols-1 md:grid-cols-4 gap-0">
             {processSteps.map(({ num, title, desc }, i) => (
@@ -271,14 +255,14 @@ export default function ServicesPage() {
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
             <Link
               href="/contact"
-              className="inline-flex items-center justify-center px-6 py-3.5 bg-rouge hover:bg-white hover:text-primary text-white font-sans font-bold text-xs uppercase tracking-wider transition-colors"
+              className="inline-flex items-center justify-center px-8 py-3.5 bg-[var(--color-accent)] hover:bg-[#e0b000] text-white font-sans font-bold text-[13px] uppercase tracking-wider transition-colors"
             >
               Demander un devis
               <ArrowRight className="w-4 h-4 ml-2" />
             </Link>
             <Link
               href="/formations"
-              className="inline-flex items-center justify-center px-6 py-3.5 border-2 border-white hover:bg-white hover:text-primary text-white font-sans font-bold text-xs uppercase tracking-wider transition-colors"
+              className="inline-flex items-center justify-center px-8 py-3.5 border border-white hover:bg-white hover:text-[var(--color-primary)] text-white font-sans font-bold text-[13px] uppercase tracking-wider transition-colors"
             >
               Voir les formations
             </Link>

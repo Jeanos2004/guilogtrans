@@ -5,6 +5,7 @@ import Link from "next/link";
 import Image from "next/image";
 import { ChevronRight, MapPin, Phone, Mail, Clock, Send, CheckCircle } from "lucide-react";
 import { motion } from "framer-motion";
+import { SectionTitle } from "@/components/SectionTitle";
 import { db } from "@/lib/db";
 
 export default function ContactPage() {
@@ -32,34 +33,33 @@ export default function ContactPage() {
   return (
     <>
       {/* Hero Section */}
-      <section className="bg-[var(--color-primary)] py-20 relative overflow-hidden">
-        <Image
-          src="/images/contact_hero.png"
-          alt="Contactez Cabinet Guilogtrans"
-          fill
-          sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
-          priority
-          className="object-cover opacity-20"
-        />
+      <section className="relative bg-[var(--color-primary)] pt-32 pb-24 overflow-hidden">
+        <div className="absolute top-0 right-0 w-1/2 h-full opacity-10 pointer-events-none" style={{ backgroundImage: 'radial-gradient(#ffffff 1px, transparent 1px)', backgroundSize: '24px 24px' }} />
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
-          <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}>
-            <h1 className="text-4xl md:text-5xl font-heading font-bold text-white mb-4">Contactez-nous</h1>
-            <div className="flex items-center text-sm text-gray-300">
+          <motion.div initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.4 }}>
+            <div className="flex items-center text-xs font-bold uppercase tracking-widest text-[var(--color-accent)] mb-5 gap-2">
               <Link href="/" className="hover:text-white transition-colors">Accueil</Link>
-              <ChevronRight className="w-4 h-4 mx-2" />
-              <span className="text-[var(--color-accent)]">Contact</span>
+              <ChevronRight className="w-4 h-4" />
+              <span>Contact</span>
             </div>
+            <h1 className="text-4xl md:text-5xl font-heading font-bold text-white mb-6">
+              Contactez-nous
+            </h1>
+            <div className="w-20 h-1 bg-[var(--color-accent)] mb-8" />
+            <p className="text-white/70 text-[15px] leading-relaxed max-w-2xl font-sans">
+              Une question, un devis ou besoin d'un accompagnement sur mesure ? Notre équipe est à votre écoute pour vous apporter des réponses adaptées.
+            </p>
           </motion.div>
         </div>
       </section>
 
       <section className="py-20 bg-[var(--color-surface)] relative">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="bg-white rounded-2xl shadow-xl overflow-hidden flex flex-col lg:flex-row border border-gray-100">
+          <div className="bg-white shadow-xl overflow-hidden flex flex-col lg:flex-row border border-gray-200">
             
             {/* Form Column */}
             <div className="lg:w-3/5 p-8 md:p-12">
-              <h2 className="text-3xl font-heading font-bold text-[var(--color-primary)] mb-6">Envoyez-nous un message</h2>
+              <SectionTitle title="Envoyez-nous un message" subtitle="Formulaire de contact" />
               <p className="text-gray-600 mb-8">
                 Vous avez une question sur nos formations ou souhaitez un accompagnement sur mesure ? Remplissez le formulaire ci-dessous et notre équipe vous répondra rapidement.
               </p>
@@ -86,26 +86,26 @@ export default function ContactPage() {
                 <form className="space-y-6" onSubmit={handleSubmit}>
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-1">Nom complet *</label>
-                      <input name="fullName" type="text" required value={formData.fullName} onChange={handleChange} className="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-[var(--color-primary)] focus:border-transparent outline-none transition-shadow" placeholder="Votre nom" />
+                      <label className="block text-xs font-bold uppercase tracking-wider text-[var(--color-primary)] mb-2">Nom complet *</label>
+                      <input name="fullName" type="text" required value={formData.fullName} onChange={handleChange} className="w-full px-4 py-3 border border-gray-200 bg-gray-50 focus:bg-white focus:ring-1 focus:ring-[var(--color-primary)] focus:border-[var(--color-primary)] outline-none transition-all" placeholder="Votre nom" />
                     </div>
                     <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-1">Email *</label>
-                      <input name="email" type="email" required value={formData.email} onChange={handleChange} className="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-[var(--color-primary)] focus:border-transparent outline-none transition-shadow" placeholder="votre@email.com" />
+                      <label className="block text-xs font-bold uppercase tracking-wider text-[var(--color-primary)] mb-2">Email *</label>
+                      <input name="email" type="email" required value={formData.email} onChange={handleChange} className="w-full px-4 py-3 border border-gray-200 bg-gray-50 focus:bg-white focus:ring-1 focus:ring-[var(--color-primary)] focus:border-[var(--color-primary)] outline-none transition-all" placeholder="votre@email.com" />
                     </div>
                   </div>
                   
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">Sujet *</label>
-                    <input name="subject" type="text" required value={formData.subject} onChange={handleChange} className="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-[var(--color-primary)] focus:border-transparent outline-none transition-shadow" placeholder="Objet de votre message" />
+                    <label className="block text-xs font-bold uppercase tracking-wider text-[var(--color-primary)] mb-2">Sujet *</label>
+                    <input name="subject" type="text" required value={formData.subject} onChange={handleChange} className="w-full px-4 py-3 border border-gray-200 bg-gray-50 focus:bg-white focus:ring-1 focus:ring-[var(--color-primary)] focus:border-[var(--color-primary)] outline-none transition-all" placeholder="Objet de votre message" />
                   </div>
                   
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">Message *</label>
-                    <textarea name="message" rows={5} required value={formData.message} onChange={handleChange} className="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-[var(--color-primary)] focus:border-transparent outline-none transition-shadow" placeholder="Comment pouvons-nous vous aider ?"></textarea>
+                    <label className="block text-xs font-bold uppercase tracking-wider text-[var(--color-primary)] mb-2">Message *</label>
+                    <textarea name="message" rows={5} required value={formData.message} onChange={handleChange} className="w-full px-4 py-3 border border-gray-200 bg-gray-50 focus:bg-white focus:ring-1 focus:ring-[var(--color-primary)] focus:border-[var(--color-primary)] outline-none transition-all" placeholder="Comment pouvons-nous vous aider ?"></textarea>
                   </div>
                   
-                  <button type="submit" disabled={isSubmitting} className="inline-flex items-center px-8 py-3 bg-[var(--color-primary)] text-white rounded-md font-medium hover:bg-[var(--color-accent)] transition-colors disabled:opacity-70">
+                  <button type="submit" disabled={isSubmitting} className="inline-flex items-center justify-center w-full md:w-auto px-8 py-4 bg-[var(--color-primary)] text-white font-bold text-xs uppercase tracking-wider hover:bg-[var(--color-accent)] transition-colors disabled:opacity-70 mt-4">
                     {isSubmitting ? "Envoi en cours..." : <><span>Envoyer le message</span> <Send className="w-4 h-4 ml-2" /></>}
                   </button>
                 </form>
