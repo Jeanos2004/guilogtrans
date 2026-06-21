@@ -7,11 +7,12 @@ import { Menu, X, MapPin, Package, Calendar, Phone, ArrowUpRight } from "lucide-
 import { cn } from "@/lib/utils";
 
 const navLinks = [
-  { name: "Accueil +", href: "/" },
-  { name: "Pages +", href: "/a-propos" },
-  { name: "Services +", href: "/services" },
-  { name: "Projets +", href: "/projets" },
-  { name: "Blogs +", href: "/actualites" },
+  { name: "Accueil", href: "/" },
+  { name: "À propos", href: "/a-propos" },
+  { name: "Nos Services", href: "/services" },
+  { name: "Formations", href: "/formations" },
+  { name: "Galerie", href: "/galerie" },
+  { name: "Actualités", href: "/actualites" },
   { name: "Contact", href: "/contact" },
 ];
 
@@ -34,9 +35,9 @@ export function Navbar() {
     "w-full z-50 transition-all duration-300 ease-in-out",
     isHome
       ? isScrolled
-        ? "sticky top-0 bg-[#0A3123] shadow-lg text-white"
+        ? "sticky top-0 bg-[#0d2d38] shadow-lg text-white"
         : "absolute top-0 left-0 bg-transparent text-white border-b border-white/10"
-      : "sticky top-0 bg-[#0A3123] text-white shadow-md border-b border-[#0A3123]"
+      : "sticky top-0 bg-[#0d2d38] text-white shadow-md border-b border-[#0d2d38]"
   );
 
   return (
@@ -75,7 +76,7 @@ export function Navbar() {
             {/* Logo */}
             <Link href="/" className="flex items-center gap-3 flex-shrink-0">
               <div className="w-10 h-10 bg-[#CE1126] rounded-sm flex items-center justify-center transform hover:scale-105 transition-transform">
-                <ArrowUpRight className="w-6 h-6 text-[#0A3123] stroke-[2.5]" />
+                <ArrowUpRight className="w-6 h-6 text-[#0d2d38] stroke-[2.5]" />
               </div>
               <span className="text-3xl font-bold text-white tracking-tight">Guilog</span>
             </Link>
@@ -128,7 +129,7 @@ export function Navbar() {
 
         {/* Mobile menu */}
         {isOpen && (
-          <div className="lg:hidden bg-[#0A3123] border-t border-white/10 shadow-xl absolute left-0 right-0 w-full z-40">
+          <div className="lg:hidden bg-[#0d2d38] border-t border-white/10 shadow-xl absolute left-0 right-0 w-full z-40">
             <div className="px-4 py-4 space-y-1">
               {navLinks.map((link) => {
                 const isActive = pathname === link.href;

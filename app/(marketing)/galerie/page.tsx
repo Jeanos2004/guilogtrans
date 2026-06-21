@@ -123,43 +123,51 @@ export default function GaleriePage() {
   return (
     <>
       {/* =============== HERO =============== */}
-      <section className="relative bg-[var(--color-primary)] py-24 overflow-hidden">
-        <Image
-          src="/images/gallery.png"
-          alt="Galerie Cabinet Guilogtrans"
-          fill
-          priority
-          className="object-cover opacity-15"
-        />
+      <section className="relative bg-[#0d2d38] pt-32 pb-24 overflow-hidden">
+        {/* Airplane Graphic (Right side) */}
+        <div className="absolute right-0 top-0 bottom-0 w-1/2 opacity-80 pointer-events-none transform translate-x-12 -translate-y-4">
+          <Image
+            src="https://images.unsplash.com/photo-1436491865332-7a61a109cc05?q=80&w=1200&fit=crop&auto=format"
+            alt="Airplane flying"
+            fill
+            priority
+            className="object-cover mix-blend-screen mask-image-to-l"
+            style={{ WebkitMaskImage: 'linear-gradient(to right, transparent, black 40%)', maskImage: 'linear-gradient(to right, transparent, black 40%)' }}
+          />
+        </div>
+        
+        {/* Decorative elements */}
         <div className="absolute inset-0 overflow-hidden pointer-events-none">
           <div className="absolute -top-32 -right-32 w-96 h-96 rounded-full bg-[var(--color-accent)]/10 blur-3xl" />
           <div className="absolute -bottom-20 -left-20 w-64 h-64 rounded-full bg-white/5 blur-3xl" />
         </div>
-        <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+
+        <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center mt-8">
           <motion.div initial={{ opacity: 0, y: 30 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6 }}>
-            <div className="flex items-center text-sm text-white/60 mb-6">
-              <Link href="/" className="hover:text-white transition-colors">Accueil</Link>
-              <ChevronRight className="w-4 h-4 mx-2 opacity-40" />
-              <span className="text-[var(--color-accent)]">Galerie</span>
-            </div>
-            <h1 className="text-5xl md:text-6xl font-heading font-bold text-white leading-tight mb-4">
-              Galerie Photos <br />
-              <span className="text-[var(--color-accent)]">&amp; Vidéos</span>
+            <h1 className="text-5xl md:text-6xl font-heading font-bold text-white leading-tight mb-4 tracking-tight">
+              Gallery
             </h1>
-            <p className="text-white/60 text-base max-w-xl leading-relaxed">
-              Découvrez nos locaux, nos apprenants en action, nos cérémonies et nos moments de vie.
-            </p>
+            <div className="flex items-center justify-center text-sm text-white/80 font-medium">
+              <Link href="/" className="hover:text-[var(--color-accent)] transition-colors">Accueil</Link>
+              <ChevronRight className="w-4 h-4 mx-2 opacity-60" />
+              <span className="text-white">Galerie</span>
+            </div>
           </motion.div>
         </div>
       </section>
 
-      {/* =============== MAIN CONTENT =============== */}
-      <section className="py-16 bg-[var(--color-surface)] min-h-screen">
+      {/* =============== MAIN CONTENT (Visual Showcase) =============== */}
+      <section className="py-20 bg-white min-h-screen">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          
+          <div className="text-center mb-16">
+            <h2 className="text-3xl font-bold text-[#0d2d38] mb-4">Découvrez Notre Galerie</h2>
+            <div className="w-12 h-0.5 bg-[var(--color-accent)] mx-auto" />
+          </div>
 
           {/* ---- Category Filter Tabs ---- */}
           {!isLoading && items.length > 0 && !selectedAlbum && (
-            <div className="flex flex-wrap gap-2 mb-14">
+            <div className="flex flex-wrap gap-2 justify-center mb-14">
               {categories.map((cat) => {
                 const count = cat === "Tous" ? albums.length : albums.filter((a) => a.category === cat).length;
                 return (
@@ -170,8 +178,8 @@ export default function GaleriePage() {
                     onClick={() => setActiveCategory(cat)}
                     className={`flex items-center gap-2 px-5 py-2.5 text-xs font-bold uppercase tracking-wider transition-all duration-200 border ${
                       activeCategory === cat
-                        ? "bg-[var(--color-primary)] text-white border-[var(--color-primary)] shadow-md"
-                        : "bg-white text-gray-500 border-gray-200 hover:border-[var(--color-primary)] hover:text-[var(--color-primary)]"
+                        ? "bg-[#0d2d38] text-white border-[#0d2d38] shadow-md"
+                        : "bg-white text-gray-500 border-gray-200 hover:border-[#0d2d38] hover:text-[#0d2d38]"
                     }`}
                   >
                     {cat !== "Tous" && (
@@ -191,13 +199,9 @@ export default function GaleriePage() {
 
           {/* ---- Loading Skeleton ---- */}
           {isLoading && (
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
-              {Array.from({ length: 6 }).map((_, j) => (
-                <div key={j} className="border border-gray-200 bg-white p-4 space-y-4">
-                  <div className="aspect-[4/3] bg-gray-200 animate-pulse rounded-sm" />
-                  <div className="h-4 w-3/4 bg-gray-200 animate-pulse rounded-sm" />
-                  <div className="h-3 w-1/3 bg-gray-200 animate-pulse rounded-sm" />
-                </div>
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+              {Array.from({ length: 9 }).map((_, j) => (
+                <div key={j} className="aspect-square bg-gray-200 animate-pulse rounded-sm" />
               ))}
             </div>
           )}
@@ -219,14 +223,14 @@ export default function GaleriePage() {
                     >
                       <ArrowLeft className="w-4 h-4" /> Retour aux dossiers
                     </button>
-                    <div className="flex items-center gap-2 bg-[var(--color-primary)]/10 text-[var(--color-primary)] px-3 py-1 rounded-sm text-[10px] font-bold uppercase tracking-widest self-start">
+                    <div className="flex items-center gap-2 bg-[#0d2d38]/10 text-[#0d2d38] px-3 py-1 rounded-sm text-[10px] font-bold uppercase tracking-widest self-start">
                       {getCategoryIcon(currentAlbum.category)}
                       {currentAlbum.category}
                     </div>
                   </div>
 
                   <div className="mb-10 pb-6 border-b border-gray-100">
-                    <h2 className="text-3xl md:text-4xl font-heading font-bold text-[var(--color-primary)] mb-2">
+                    <h2 className="text-3xl md:text-4xl font-heading font-bold text-[#0d2d38] mb-2">
                       {currentAlbum.title}
                     </h2>
                     <p className="text-xs text-gray-400 font-medium uppercase tracking-widest">
@@ -235,7 +239,7 @@ export default function GaleriePage() {
                   </div>
 
                   {/* Grid for this specific album */}
-                  <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+                  <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-3 gap-4">
                     {currentAlbum.items.map((item, idx) => (
                       <GalleryTile
                         key={item.id}
@@ -247,7 +251,7 @@ export default function GaleriePage() {
                   </div>
                 </motion.div>
               ) : (
-                // Grid of Album Folder Cards
+                // Grid of Album Folder Cards (Shown as a 3x3 square grid to match image style)
                 <div>
                   {filteredAlbums.length === 0 ? (
                     <div className="py-24 text-center bg-white border border-gray-100 shadow-sm">
@@ -256,7 +260,7 @@ export default function GaleriePage() {
                       <p className="text-sm text-gray-400 mt-1">Revenez bientôt pour découvrir nos médias !</p>
                     </div>
                   ) : (
-                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
                       {filteredAlbums.map((album) => (
                         <AlbumFolderCard
                           key={album.title}
@@ -270,6 +274,87 @@ export default function GaleriePage() {
               )}
             </div>
           )}
+        </div>
+      </section>
+
+      {/* =============== GLOBE SECTION =============== */}
+      <section className="py-24 bg-[#F2F5F9] border-t border-gray-200">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="flex flex-col lg:flex-row items-start justify-between mb-16 gap-10">
+            {/* Title side */}
+            <div className="lg:w-1/2">
+              <span className="text-sm text-gray-500 font-semibold tracking-wider uppercase mb-3 block">Présence Internationale</span>
+              <h2 className="text-4xl md:text-5xl font-heading font-bold text-[#0d2d38] leading-tight max-w-xl">
+                Les Nations Avec Lesquelles Nous Travaillons
+              </h2>
+              <div className="w-12 h-0.5 bg-[var(--color-accent)] mt-6" />
+            </div>
+            
+            {/* List side */}
+            <div className="lg:w-1/2 grid grid-cols-2 sm:grid-cols-4 gap-y-4 gap-x-2 text-sm font-semibold text-[#0d2d38]">
+              <div className="flex items-center gap-2"><span className="text-lg">🇦🇪</span> Dubaï</div>
+              <div className="flex items-center gap-2"><span className="text-lg">🇨🇳</span> Chine</div>
+              <div className="flex items-center gap-2"><span className="text-lg">🇺🇸</span> Amérique</div>
+              <div className="flex items-center gap-2"><span className="text-lg">🇩🇪</span> Allemagne</div>
+              <div className="flex items-center gap-2"><span className="text-lg">🇷🇺</span> Russie</div>
+              <div className="flex items-center gap-2"><span className="text-lg">🇦🇺</span> Australie</div>
+              <div className="flex items-center gap-2"><span className="text-lg">🇫🇷</span> France</div>
+              <div className="flex items-center gap-2"><span className="text-lg">🇿🇦</span> Afrique du Sud</div>
+            </div>
+          </div>
+
+          {/* World Map Graphic */}
+          <div className="relative w-full aspect-[2/1] max-w-5xl mx-auto">
+            {/* Using a clean SVG map colored to match the dark green theme */}
+            <img 
+              src="https://upload.wikimedia.org/wikipedia/commons/e/ec/World_map_blank_without_borders.svg" 
+              alt="World Map" 
+              className="w-full h-full object-contain opacity-90"
+              style={{ filter: 'brightness(0) saturate(100%) invert(14%) sepia(35%) saturate(3015%) hue-rotate(135deg) brightness(96%) contrast(98%)' }}
+            />
+
+            {/* Glowing pins mapped approximately to the countries */}
+            {/* America */}
+            <div className="absolute top-[35%] left-[22%] w-4 h-4 text-[var(--color-accent)]">
+              <span className="absolute inline-flex h-full w-full rounded-full bg-[var(--color-accent)] opacity-40 animate-ping" />
+              <span className="relative inline-flex rounded-full h-4 w-4 bg-[var(--color-accent)] border-2 border-white" />
+            </div>
+            {/* France */}
+            <div className="absolute top-[28%] left-[48%] w-4 h-4 text-[var(--color-accent)]">
+              <span className="absolute inline-flex h-full w-full rounded-full bg-[var(--color-accent)] opacity-40 animate-ping" />
+              <span className="relative inline-flex rounded-full h-4 w-4 bg-[var(--color-accent)] border-2 border-white" />
+            </div>
+            {/* Germany */}
+            <div className="absolute top-[25%] left-[51%] w-4 h-4 text-[var(--color-accent)]">
+              <span className="absolute inline-flex h-full w-full rounded-full bg-[var(--color-accent)] opacity-40 animate-ping" />
+              <span className="relative inline-flex rounded-full h-4 w-4 bg-[var(--color-accent)] border-2 border-white" />
+            </div>
+            {/* Russia */}
+            <div className="absolute top-[20%] left-[70%] w-4 h-4 text-[var(--color-accent)]">
+              <span className="absolute inline-flex h-full w-full rounded-full bg-[var(--color-accent)] opacity-40 animate-ping" />
+              <span className="relative inline-flex rounded-full h-4 w-4 bg-[var(--color-accent)] border-2 border-white" />
+            </div>
+            {/* China */}
+            <div className="absolute top-[38%] left-[78%] w-4 h-4 text-[var(--color-accent)]">
+              <span className="absolute inline-flex h-full w-full rounded-full bg-[var(--color-accent)] opacity-40 animate-ping" />
+              <span className="relative inline-flex rounded-full h-4 w-4 bg-[var(--color-accent)] border-2 border-white" />
+            </div>
+            {/* Dubai (UAE) */}
+            <div className="absolute top-[45%] left-[62%] w-4 h-4 text-[var(--color-accent)]">
+              <span className="absolute inline-flex h-full w-full rounded-full bg-[var(--color-accent)] opacity-40 animate-ping" />
+              <span className="relative inline-flex rounded-full h-4 w-4 bg-[var(--color-accent)] border-2 border-white" />
+            </div>
+            {/* South Africa */}
+            <div className="absolute top-[75%] left-[55%] w-4 h-4 text-[var(--color-accent)]">
+              <span className="absolute inline-flex h-full w-full rounded-full bg-[var(--color-accent)] opacity-40 animate-ping" />
+              <span className="relative inline-flex rounded-full h-4 w-4 bg-[var(--color-accent)] border-2 border-white" />
+            </div>
+            {/* Australia */}
+            <div className="absolute top-[75%] left-[85%] w-4 h-4 text-[var(--color-accent)]">
+              <span className="absolute inline-flex h-full w-full rounded-full bg-[var(--color-accent)] opacity-40 animate-ping" />
+              <span className="relative inline-flex rounded-full h-4 w-4 bg-[var(--color-accent)] border-2 border-white" />
+            </div>
+          </div>
         </div>
       </section>
 
@@ -446,9 +531,9 @@ function AlbumFolderCard({
       <div className="absolute inset-0 bg-white border border-gray-200 shadow-sm rounded-none translate-x-1 translate-y-1 group-hover:translate-x-1.5 group-hover:translate-y-1.5 transition-transform duration-300 pointer-events-none" />
 
       {/* Main folder card */}
-      <div className="relative bg-white border border-gray-200 shadow-sm rounded-none overflow-hidden transition-all duration-300 group-hover:-translate-y-1 group-hover:border-[var(--color-primary)]">
+      <div className="relative bg-white shadow-sm rounded-none overflow-hidden transition-all duration-300 group-hover:-translate-y-1">
         {/* Cover image area */}
-        <div className="relative aspect-[4/3] bg-gray-100 overflow-hidden">
+        <div className="relative aspect-square bg-gray-100 overflow-hidden">
           {coverItem ? (
             coverItem.mediaType === "video" ? (
               <video

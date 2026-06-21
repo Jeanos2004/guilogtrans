@@ -225,12 +225,12 @@ export default function Home() {
       {/* ================================================
           1. HERO SECTION (Ship background, centered title)
       ================================================ */}
-      <section className="relative w-full h-[100vh] min-h-[600px] flex flex-col items-center justify-center bg-[#0A3123]">
+      <section className="relative w-full h-[100vh] min-h-[600px] flex flex-col items-center justify-center bg-[#0d2d38]">
         <div 
           className="absolute inset-0 bg-cover bg-center bg-no-repeat opacity-30 mix-blend-overlay"
           style={{ backgroundImage: `url('https://images.unsplash.com/photo-1494412574643-ff11b0a5c1c3?q=80&w=1920&fit=crop')` }}
         />
-        <div className="absolute inset-0 bg-[#0A3123]/70" />
+        <div className="absolute inset-0 bg-[#0d2d38]/70" />
 
         <div className="relative z-10 text-center max-w-4xl px-4 sm:px-6 lg:px-8 mt-20 flex-grow flex flex-col justify-center items-center">
           <motion.span
@@ -274,7 +274,7 @@ export default function Home() {
       {/* ================================================
           2. INTRO & STATS SECTION (Leading Provider & 5 Stats)
       ================================================ */}
-      <section className="relative py-28 bg-[#0A3123] overflow-hidden">
+      <section className="relative py-28 bg-[#0d2d38] overflow-hidden">
         {/* World Map Dotted Background */}
         <div 
           className="absolute inset-0 opacity-[0.10] pointer-events-none bg-center bg-no-repeat" 
@@ -321,8 +321,8 @@ export default function Home() {
         <div className="flex flex-col lg:flex-row min-h-[600px]">
           {/* Left Column (Text & Button) */}
           <div className="lg:w-[40%] p-8 sm:p-16 flex flex-col justify-center bg-[#F2F5F9]">
-            <span className="text-[#0A3123] text-sm font-sans mb-4 tracking-wide font-medium">Nos Domaines d'Expertise</span>
-            <h2 className="text-4xl sm:text-[50px] font-bold text-[#0A3123] leading-[1.1] mb-6">
+            <span className="text-[#0d2d38] text-sm font-sans mb-4 tracking-wide font-medium">Nos Domaines d'Expertise</span>
+            <h2 className="text-4xl sm:text-[50px] font-bold text-[#0d2d38] leading-[1.1] mb-6">
               Services & <br /> Formations
             </h2>
             
@@ -332,7 +332,7 @@ export default function Home() {
               <Activity className="w-6 h-6" />
             </div>
 
-            <p className="text-[#0A3123]/70 text-base leading-relaxed mb-10 font-sans max-w-sm">
+            <p className="text-[#0d2d38]/70 text-base leading-relaxed mb-10 font-sans max-w-sm">
               Nous accompagnons les entreprises et les professionnels à travers des missions de conseil, d'audit, et des programmes de formations sur-mesure.
             </p>
 
@@ -356,7 +356,7 @@ export default function Home() {
               
               if (isActive) {
                 return (
-                  <div key={service.id} className="flex flex-col px-10 py-10 bg-[#0A3123] text-white shadow-2xl relative z-10 border-l-4 border-[#FCD116] transition-all duration-500">
+                  <div key={service.id} className="flex flex-col px-10 py-10 bg-[#0d2d38] text-white shadow-2xl relative z-10 border-l-4 border-[#FCD116] transition-all duration-500">
                     <div className="flex items-center gap-6 mb-4">
                       <service.icon className="w-10 h-10 stroke-[1.5] text-white" />
                       <h3 className="text-xl font-bold">{service.title}</h3>
@@ -381,7 +381,7 @@ export default function Home() {
                 <div 
                   key={service.id} 
                   onClick={() => setActiveServiceId(service.id)}
-                  className="flex items-center gap-6 px-10 py-10 border-b border-gray-200 hover:bg-[#F2F5F9] transition-colors cursor-pointer text-[#0A3123]"
+                  className="flex items-center gap-6 px-10 py-10 border-b border-gray-200 hover:bg-[#F2F5F9] transition-colors cursor-pointer text-[#0d2d38]"
                 >
                   <service.icon className="w-10 h-10 stroke-[1.5]" />
                   <h3 className="text-xl font-bold">{service.title}</h3>
@@ -409,7 +409,7 @@ export default function Home() {
             {/* Scroll Up Button - matches image layout at bottom right */}
             <button 
               onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
-              className="absolute bottom-6 right-6 w-12 h-12 bg-[#0A3123] text-white flex items-center justify-center hover:bg-[#CE1126] transition-colors z-20"
+              className="absolute bottom-6 right-6 w-12 h-12 bg-[#0d2d38] text-white flex items-center justify-center hover:bg-[#CE1126] transition-colors z-20"
             >
               <ChevronRight className="w-6 h-6 -rotate-90" />
             </button>
@@ -420,7 +420,7 @@ export default function Home() {
       {/* ================================================
           4. COST-EFFECTIVE SERVICES (Left cargo image, right service grid)
       ================================================ */}
-      <section className="py-24 bg-[#0A3123] text-white">
+      <section className="py-24 bg-[#0d2d38] text-white">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
             
@@ -445,7 +445,7 @@ export default function Home() {
                     />
                   </div>
                   {/* The overlapping dark box */}
-                  <div className="absolute bottom-16 left-0 w-[85%] bg-gradient-to-r from-[#0A3123] to-[#0A3123]/90 backdrop-blur-md p-10 shadow-2xl border-t border-white/5">
+                  <div className="absolute bottom-16 left-0 w-[85%] bg-gradient-to-r from-[#0d2d38] to-[#0d2d38]/90 backdrop-blur-md p-10 shadow-2xl border-t border-white/5">
                     <h3 className="text-[#FCD116] text-3xl sm:text-4xl font-bold mb-6 leading-tight">
                       {section4Slides[s4Index].title}
                     </h3>
@@ -516,7 +516,7 @@ export default function Home() {
 
                 <a href="tel:+224626625162" className="flex items-center gap-4 group">
                   <div className="w-12 h-12 rounded-full bg-[#FCD116] flex items-center justify-center group-hover:bg-[#E5BD0F] transition-colors">
-                    <PhoneCall className="w-5 h-5 text-[#0A3123]" />
+                    <PhoneCall className="w-5 h-5 text-[#0d2d38]" />
                   </div>
                   <div>
                     <span className="block text-[13px] text-white/80 font-sans mb-0.5">Appelez nos experts</span>
@@ -538,11 +538,11 @@ export default function Home() {
           {/* Left Column (Form) */}
           <div className="lg:w-1/2 p-8 sm:p-16 lg:p-24 bg-[#F2F5F9] relative overflow-hidden flex flex-col justify-center">
             {/* Subtle background pattern */}
-            <div className="absolute inset-0 opacity-[0.03] pointer-events-none" style={{ backgroundImage: 'radial-gradient(#0A3123 1px, transparent 1px)', backgroundSize: '32px 32px' }} />
+            <div className="absolute inset-0 opacity-[0.03] pointer-events-none" style={{ backgroundImage: 'radial-gradient(#0d2d38 1px, transparent 1px)', backgroundSize: '32px 32px' }} />
             
             <div className="relative z-10">
-              <span className="text-[#0A3123]/70 text-sm font-sans mb-4 block font-medium">Inscription Rapide</span>
-              <h2 className="text-4xl sm:text-5xl font-bold text-[#0A3123] leading-[1.1] mb-6">
+              <span className="text-[#0d2d38]/70 text-sm font-sans mb-4 block font-medium">Inscription Rapide</span>
+              <h2 className="text-4xl sm:text-5xl font-bold text-[#0d2d38] leading-[1.1] mb-6">
                 Réservez Votre <br /> Session De Formation
               </h2>
               
@@ -551,18 +551,18 @@ export default function Home() {
                 <Calendar className="w-6 h-6" />
               </div>
 
-              <p className="text-[#0A3123]/70 text-[14px] leading-relaxed mb-10 font-sans max-w-lg">
+              <p className="text-[#0d2d38]/70 text-[14px] leading-relaxed mb-10 font-sans max-w-lg">
                 Consultez notre planning et réservez votre place pour nos prochaines masterclass et formations certifiantes.
               </p>
 
               <form className="space-y-4">
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                  <input type="text" placeholder="Entrez Votre Nom" className="w-full px-6 py-4 bg-transparent border border-gray-300 focus:outline-none focus:border-[#FCD116] focus:ring-1 focus:ring-[#FCD116] text-[13px] text-[#0A3123] transition-all" />
-                  <input type="email" placeholder="Entrez Votre Email" className="w-full px-6 py-4 bg-transparent border border-gray-300 focus:outline-none focus:border-[#FCD116] focus:ring-1 focus:ring-[#FCD116] text-[13px] text-[#0A3123] transition-all" />
+                  <input type="text" placeholder="Entrez Votre Nom" className="w-full px-6 py-4 bg-transparent border border-gray-300 focus:outline-none focus:border-[#FCD116] focus:ring-1 focus:ring-[#FCD116] text-[13px] text-[#0d2d38] transition-all" />
+                  <input type="email" placeholder="Entrez Votre Email" className="w-full px-6 py-4 bg-transparent border border-gray-300 focus:outline-none focus:border-[#FCD116] focus:ring-1 focus:ring-[#FCD116] text-[13px] text-[#0d2d38] transition-all" />
                 </div>
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   <div className="relative">
-                    <select className="w-full px-6 py-4 bg-transparent border border-gray-300 focus:outline-none focus:border-[#FCD116] text-[13px] text-[#0A3123]/70 appearance-none transition-all cursor-pointer">
+                    <select className="w-full px-6 py-4 bg-transparent border border-gray-300 focus:outline-none focus:border-[#FCD116] text-[13px] text-[#0d2d38]/70 appearance-none transition-all cursor-pointer">
                       <option value="">Sélectionnez un programme</option>
                       <option value="gestion-stocks">Gestion des Stocks</option>
                       <option value="douane">Réglementation Douanière</option>
@@ -571,7 +571,7 @@ export default function Home() {
                     <ChevronRight className="absolute right-6 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400 rotate-90 pointer-events-none" />
                   </div>
                   <div className="relative">
-                    <select className="w-full px-6 py-4 bg-transparent border border-gray-300 focus:outline-none focus:border-[#FCD116] text-[13px] text-[#0A3123]/70 appearance-none transition-all cursor-pointer">
+                    <select className="w-full px-6 py-4 bg-transparent border border-gray-300 focus:outline-none focus:border-[#FCD116] text-[13px] text-[#0d2d38]/70 appearance-none transition-all cursor-pointer">
                       <option value="">Profil</option>
                       <option value="entreprise">Entreprise</option>
                       <option value="particulier">Particulier / Étudiant</option>
@@ -579,7 +579,7 @@ export default function Home() {
                     <ChevronRight className="absolute right-6 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400 rotate-90 pointer-events-none" />
                   </div>
                 </div>
-                <textarea rows={4} placeholder="Besoins spécifiques / Message" className="w-full px-6 py-4 bg-transparent border border-gray-300 focus:outline-none focus:border-[#FCD116] text-[13px] text-[#0A3123] resize-none transition-all"></textarea>
+                <textarea rows={4} placeholder="Besoins spécifiques / Message" className="w-full px-6 py-4 bg-transparent border border-gray-300 focus:outline-none focus:border-[#FCD116] text-[13px] text-[#0d2d38] resize-none transition-all"></textarea>
                 
                 <button type="submit" className="px-10 py-4 bg-[#CE1126] hover:bg-[#A90D1E] text-white font-sans text-[14px] font-medium transition-all inline-block mt-4 shadow-sm">
                   Valider L'inscription
@@ -599,7 +599,7 @@ export default function Home() {
             {/* Scroll Up Button at bottom right */}
             <button 
               onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
-              className="absolute bottom-6 right-6 w-12 h-12 bg-[#0A3123] text-white flex items-center justify-center hover:bg-[#FF8050] transition-colors z-20"
+              className="absolute bottom-6 right-6 w-12 h-12 bg-[#0d2d38] text-white flex items-center justify-center hover:bg-[#FF8050] transition-colors z-20"
             >
               <ChevronRight className="w-6 h-6 -rotate-90" />
             </button>
@@ -610,7 +610,7 @@ export default function Home() {
       {/* ================================================
           6. PARTNERS LOGOS (Sliding Marquee)
       ================================================ */}
-      <section className="pt-24 pb-16 bg-[#0A3123] overflow-hidden">
+      <section className="pt-24 pb-16 bg-[#0d2d38] overflow-hidden">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center mb-16">
           <span className="text-white/80 text-sm font-sans mb-4 block font-medium">Nos Références</span>
           <h2 className="text-4xl sm:text-5xl font-bold text-white leading-tight mb-6">
@@ -681,7 +681,7 @@ export default function Home() {
       {/* ================================================
           7. TEAM MEMBERS GRID (Logi Team Members)
       ================================================ */}
-      <section className="py-24 bg-[#0A3123]">
+      <section className="py-24 bg-[#0d2d38]">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-20">
             <span className="text-white/80 text-sm font-sans mb-4 block font-medium">Pédagogie & Expertise</span>
@@ -711,20 +711,20 @@ export default function Home() {
                 </div>
                 {/* Details Right */}
                 <div className={`p-10 sm:p-12 lg:p-14 flex flex-col justify-center sm:w-1/2 ${idx === 3 ? 'bg-[#CE1126]' : 'bg-[#F2F5F9]'}`}>
-                  <span className={`block text-xs font-sans tracking-widest mb-3 ${idx === 3 ? 'text-white/90' : 'text-[#0A3123]/80'}`}>
+                  <span className={`block text-xs font-sans tracking-widest mb-3 ${idx === 3 ? 'text-white/90' : 'text-[#0d2d38]/80'}`}>
                     {expert.role}
                   </span>
-                  <h3 className={`text-2xl sm:text-[28px] font-bold mb-6 leading-tight ${idx === 3 ? 'text-white' : 'text-[#0A3123]'}`}>
+                  <h3 className={`text-2xl sm:text-[28px] font-bold mb-6 leading-tight ${idx === 3 ? 'text-white' : 'text-[#0d2d38]'}`}>
                     {expert.name}
                   </h3>
-                  <p className={`text-[14px] sm:text-[15px] leading-relaxed font-sans mb-8 ${idx === 3 ? 'text-white/90' : 'text-[#0A3123]/80'}`}>
+                  <p className={`text-[14px] sm:text-[15px] leading-relaxed font-sans mb-8 ${idx === 3 ? 'text-white/90' : 'text-[#0d2d38]/80'}`}>
                     {expert.bio}
                   </p>
                   <div className="flex items-center gap-4 mt-auto">
-                    <div className="w-12 h-12 flex items-center justify-center rounded-full bg-[#0A3123] hover:bg-[#FCD116] transition-colors cursor-pointer group/btn">
-                      <ArrowRight className="w-5 h-5 text-white group-hover/btn:text-[#0A3123] transform rotate-45" />
+                    <div className="w-12 h-12 flex items-center justify-center rounded-full bg-[#0d2d38] hover:bg-[#FCD116] transition-colors cursor-pointer group/btn">
+                      <ArrowRight className="w-5 h-5 text-white group-hover/btn:text-[#0d2d38] transform rotate-45" />
                     </div>
-                    <span className={`text-[13px] font-bold tracking-widest cursor-pointer ${idx === 3 ? 'text-white' : 'text-[#0A3123]'}`}>
+                    <span className={`text-[13px] font-bold tracking-widest cursor-pointer ${idx === 3 ? 'text-white' : 'text-[#0d2d38]'}`}>
                       VOIR LE PROFIL
                     </span>
                   </div>
@@ -738,7 +738,7 @@ export default function Home() {
       {/* ================================================
           8. PROCESS TIMELINE (How It Works)
       ================================================ */}
-      <section className="py-24 bg-[#0A3123] relative">
+      <section className="py-24 bg-[#0d2d38] relative">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-24">
             <span className="text-white/80 text-sm font-sans mb-4 block font-medium">Comment Nous Procédons</span>
@@ -833,7 +833,7 @@ export default function Home() {
       {/* ================================================
           9. COMPLETED PROJECTS (Exceptional Services)
       ================================================ */}
-      <section className="py-24 bg-[#0A3123]">
+      <section className="py-24 bg-[#0d2d38]">
         <div className="w-[95%] max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-16">
             <span className="text-white/80 text-sm font-sans mb-4 block font-medium">Découvrez Nos Réalisations</span>
@@ -859,7 +859,7 @@ export default function Home() {
                   fill
                   className="object-cover transition-transform duration-700 group-hover:scale-105"
                 />
-                <div className="absolute inset-0 bg-gradient-to-t from-[#0A3123]/95 via-[#0A3123]/40 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500 flex flex-col justify-end p-10">
+                <div className="absolute inset-0 bg-gradient-to-t from-[#0d2d38]/95 via-[#0d2d38]/40 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500 flex flex-col justify-end p-10">
                   <span className="text-[#FCD116] text-[15px] font-sans mb-2 block tracking-wide translate-y-4 group-hover:translate-y-0 transition-transform duration-500">
                     {projects[0].category}
                   </span>
@@ -880,7 +880,7 @@ export default function Home() {
                   fill
                   className="object-cover transition-transform duration-700 group-hover:scale-105"
                 />
-                <div className="absolute inset-0 bg-gradient-to-t from-[#0A3123]/95 via-[#0A3123]/40 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500 flex flex-col justify-end p-10">
+                <div className="absolute inset-0 bg-gradient-to-t from-[#0d2d38]/95 via-[#0d2d38]/40 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500 flex flex-col justify-end p-10">
                   <span className="text-[#FCD116] text-[15px] font-sans mb-2 block tracking-wide translate-y-4 group-hover:translate-y-0 transition-transform duration-500">
                     {projects[1].category}
                   </span>
@@ -904,7 +904,7 @@ export default function Home() {
                   fill
                   className="object-cover transition-transform duration-700 group-hover:scale-105"
                 />
-                <div className="absolute inset-0 bg-gradient-to-t from-[#0A3123]/95 via-[#0A3123]/40 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500 flex flex-col justify-end p-10">
+                <div className="absolute inset-0 bg-gradient-to-t from-[#0d2d38]/95 via-[#0d2d38]/40 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500 flex flex-col justify-end p-10">
                   <span className="text-[#FF8050] text-[15px] font-sans mb-2 block tracking-wide translate-y-4 group-hover:translate-y-0 transition-transform duration-500">
                     {projects[2].category}
                   </span>
@@ -927,7 +927,7 @@ export default function Home() {
                 />
                 {/* On the bottom right image, let's make the overlay partially visible or fully visible on hover. 
                     The screenshot shows it visible, so we'll just use the same hover effect, but it will appear exactly as in the screenshot when hovered. */}
-                <div className="absolute inset-0 bg-gradient-to-t from-[#0A3123]/95 via-[#0A3123]/40 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500 flex flex-col justify-end p-10">
+                <div className="absolute inset-0 bg-gradient-to-t from-[#0d2d38]/95 via-[#0d2d38]/40 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500 flex flex-col justify-end p-10">
                   <span className="text-[#FF8050] text-[15px] font-sans mb-2 block tracking-wide translate-y-4 group-hover:translate-y-0 transition-transform duration-500">
                     {projects[3].category}
                   </span>
@@ -950,7 +950,7 @@ export default function Home() {
       ================================================ */}
       <section className="py-24 relative bg-[#F2F5F9] overflow-hidden">
         {/* Subtle Map Background Pattern */}
-        <div className="absolute inset-0 opacity-10 pointer-events-none" style={{ backgroundImage: 'radial-gradient(#0A3123 1px, transparent 1px)', backgroundSize: '24px 24px' }} />
+        <div className="absolute inset-0 opacity-10 pointer-events-none" style={{ backgroundImage: 'radial-gradient(#0d2d38 1px, transparent 1px)', backgroundSize: '24px 24px' }} />
         
         {/* Delivery Driver Image Faded in Background */}
         <div className="absolute bottom-0 right-0 lg:right-1/4 w-[500px] h-[700px] pointer-events-none hidden md:block opacity-60 z-0" style={{ WebkitMaskImage: 'linear-gradient(to right, transparent, black 30%, black 80%, transparent)' }}>
@@ -965,7 +965,7 @@ export default function Home() {
               <span className="text-gray-500 text-[15px] font-sans mb-4 block font-medium">
                 Authenticité & Reconnaissance
               </span>
-              <h2 className="text-4xl sm:text-[46px] font-bold text-[#0A3123] leading-tight mb-6">
+              <h2 className="text-4xl sm:text-[46px] font-bold text-[#0d2d38] leading-tight mb-6">
                 Vérification de Certificat <br /> d'Aptitude
               </h2>
               <div className="flex items-center gap-2 text-[#FCD116] mb-8">
@@ -973,7 +973,7 @@ export default function Home() {
                 <Award className="w-6 h-6" />
               </div>
 
-              <p className="text-[#0A3123]/80 text-[15px] leading-relaxed mb-10 font-sans">
+              <p className="text-[#0d2d38]/80 text-[15px] leading-relaxed mb-10 font-sans">
                 Assurez-vous de la validité et de l'authenticité des certificats délivrés par le Cabinet Guilogtrans lors de nos sessions de formation professionnelle.
               </p>
 
@@ -988,8 +988,8 @@ export default function Home() {
                   <li key={idx} className="flex items-center gap-3">
                     <div className="w-2.5 h-2.5 bg-[#CE1126] rotate-45 flex-shrink-0" />
                     <div className="text-[15px]">
-                      <span className="font-bold text-[#0A3123]">{item.title} : </span>
-                      <span className="text-[#0A3123]/80">{item.desc}</span>
+                      <span className="font-bold text-[#0d2d38]">{item.title} : </span>
+                      <span className="text-[#0d2d38]/80">{item.desc}</span>
                     </div>
                   </li>
                 ))}
@@ -1000,7 +1000,7 @@ export default function Home() {
                 <div className="w-8 h-8 rounded-full bg-[#CE1126] text-white flex flex-shrink-0 items-center justify-center font-bold text-lg mt-1">
                   i
                 </div>
-                <p className="text-[14px] text-[#0A3123]/80 leading-relaxed max-w-md">
+                <p className="text-[14px] text-[#0d2d38]/80 leading-relaxed max-w-md">
                   Chaque certificat possède un numéro d'identification unique. <Link href="#" className="text-[#CE1126] font-medium hover:underline">En savoir plus</Link>
                 </p>
               </div>
@@ -1008,7 +1008,7 @@ export default function Home() {
 
             {/* Right Content (Tracking Box) */}
             <div className="flex justify-end">
-              <div className="bg-[#0A3123] p-10 lg:p-14 text-white w-full max-w-[600px] shadow-2xl relative z-10 border-t-4 border-[#CE1126]">
+              <div className="bg-[#0d2d38] p-10 lg:p-14 text-white w-full max-w-[600px] shadow-2xl relative z-10 border-t-4 border-[#CE1126]">
                 <div className="flex justify-between items-start mb-10">
                   <h3 className="text-[32px] sm:text-[40px] font-bold leading-tight">
                     Vérifier Un <br/> Certificat
@@ -1026,7 +1026,7 @@ export default function Home() {
                     onChange={(e) => setTrackId(e.target.value)}
                     placeholder="Entrez le numéro du certificat (ex: CERT-100)"
                     required
-                    className="w-full bg-[#F4F4F4] text-[#0A3123] px-5 py-4 font-medium focus:outline-none focus:ring-2 focus:ring-[#FCD116] placeholder:text-gray-400 transition-all"
+                    className="w-full bg-[#F4F4F4] text-[#0d2d38] px-5 py-4 font-medium focus:outline-none focus:ring-2 focus:ring-[#FCD116] placeholder:text-gray-400 transition-all"
                   />
                   
                   <div className="pt-4">
@@ -1064,7 +1064,7 @@ export default function Home() {
       {/* ================================================
           11. BLOG & NEWS (Updates, Blogs & News)
       ================================================ */}
-      <section className="py-24 bg-[#0A3123]">
+      <section className="py-24 bg-[#0d2d38]">
         <div className="w-[95%] max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex flex-col sm:flex-row justify-between items-start sm:items-end mb-16">
             <div>
@@ -1087,7 +1087,7 @@ export default function Home() {
               <div key={idx} className="group cursor-pointer">
                 <div className="relative h-[280px] sm:h-[320px] w-full overflow-hidden mb-6">
                   <Image src={blog.image} alt={blog.title} fill className="object-cover transition-transform duration-700 group-hover:scale-105" />
-                  <div className="absolute top-0 left-0 bg-[#FCD116] text-[#0A3123] px-5 py-2.5 font-bold text-sm tracking-wide">
+                  <div className="absolute top-0 left-0 bg-[#FCD116] text-[#0d2d38] px-5 py-2.5 font-bold text-sm tracking-wide">
                     {blog.date}
                   </div>
                 </div>

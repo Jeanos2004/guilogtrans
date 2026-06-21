@@ -12,7 +12,7 @@ import {
 
 export function Footer() {
   return (
-    <footer className="relative bg-[#0A3123] text-white pt-24 pb-8 border-t border-white/10 mt-0">
+    <footer className="relative bg-[#0d2d38] text-white pt-24 pb-8 border-t border-white/10 mt-0">
       {/* Background image of trucks */}
       <div className="absolute inset-0 opacity-[0.15] pointer-events-none mix-blend-luminosity">
         <Image 
@@ -44,9 +44,9 @@ export function Footer() {
                   type="email" 
                   placeholder="Votre adresse email" 
                   required
-                  className="w-full bg-[#F2F5F9] text-[#0A3123] px-6 py-5 text-[15px] font-medium focus:outline-none placeholder-gray-400" 
+                  className="w-full bg-[#F2F5F9] text-[#0d2d38] px-6 py-5 text-[15px] font-medium focus:outline-none placeholder-gray-400" 
                 />
-                <button type="submit" className="absolute right-6 top-1/2 -translate-y-1/2 text-[#0A3123] hover:text-[#CE1126] transition-colors">
+                <button type="submit" className="absolute right-6 top-1/2 -translate-y-1/2 text-[#0d2d38] hover:text-[#CE1126] transition-colors">
                    <Send className="w-5 h-5" />
                 </button>
               </form>
@@ -119,15 +119,15 @@ export function Footer() {
         {/* Right Side Container (Form) */}
         <div className="lg:w-[35%] relative mt-12 lg:mt-0 lg:-mt-16">
           <div className="bg-[#F2F5F9] p-10 sm:p-14 h-full shadow-2xl relative z-20 border-t-4 border-[#CE1126]">
-            <form className="space-y-10 text-[#0A3123]" onSubmit={(e) => e.preventDefault()}>
+            <form className="space-y-10 text-[#0d2d38]" onSubmit={(e) => e.preventDefault()}>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-8">
                 <div>
                   <label className="block text-[17px] font-bold mb-4">Nom Complet:</label>
-                  <input type="text" placeholder="Votre nom" className="w-full bg-transparent border-b border-gray-300 pb-3 text-[14px] font-medium text-gray-600 focus:outline-none focus:border-[#0A3123] transition-colors placeholder-gray-400" />
+                  <input type="text" placeholder="Votre nom" className="w-full bg-transparent border-b border-gray-300 pb-3 text-[14px] font-medium text-gray-600 focus:outline-none focus:border-[#0d2d38] transition-colors placeholder-gray-400" />
                 </div>
                 <div>
                   <label className="block text-[17px] font-bold mb-4">Téléphone:</label>
-                  <input type="text" placeholder="+224 ..." className="w-full bg-transparent border-b border-gray-300 pb-3 text-[14px] font-medium text-gray-600 focus:outline-none focus:border-[#0A3123] transition-colors placeholder-gray-400" />
+                  <input type="text" placeholder="+224 ..." className="w-full bg-transparent border-b border-gray-300 pb-3 text-[14px] font-medium text-gray-600 focus:outline-none focus:border-[#0d2d38] transition-colors placeholder-gray-400" />
                 </div>
               </div>
               
@@ -135,25 +135,25 @@ export function Footer() {
                 <div>
                   <label className="block text-[17px] font-bold mb-4">Service Requis:</label>
                   <div className="relative">
-                    <select className="w-full bg-transparent border-b border-gray-300 pb-3 text-[14px] font-medium text-gray-600 focus:outline-none focus:border-[#0A3123] transition-colors appearance-none pr-6 cursor-pointer">
+                    <select className="w-full bg-transparent border-b border-gray-300 pb-3 text-[14px] font-medium text-gray-600 focus:outline-none focus:border-[#0d2d38] transition-colors appearance-none pr-6 cursor-pointer">
                       <option>Conseil</option>
                       <option>Audit</option>
                       <option>Formation</option>
                     </select>
                     <div className="absolute right-0 top-1/2 -translate-y-[80%] pointer-events-none">
-                      <svg className="w-4 h-4 text-[#0A3123]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M19 9l-7 7-7-7" /></svg>
+                      <svg className="w-4 h-4 text-[#0d2d38]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M19 9l-7 7-7-7" /></svg>
                     </div>
                   </div>
                 </div>
                 <div>
                   <label className="block text-[17px] font-bold mb-4">Entreprise:</label>
-                  <input type="text" placeholder="Nom de l'entreprise" className="w-full bg-transparent border-b border-gray-300 pb-3 text-[14px] font-medium text-gray-600 focus:outline-none focus:border-[#0A3123] transition-colors placeholder-gray-400" />
+                  <input type="text" placeholder="Nom de l'entreprise" className="w-full bg-transparent border-b border-gray-300 pb-3 text-[14px] font-medium text-gray-600 focus:outline-none focus:border-[#0d2d38] transition-colors placeholder-gray-400" />
                 </div>
               </div>
 
               <div>
                 <label className="block text-[17px] font-bold mb-4">Détails de la Demande:</label>
-                <textarea placeholder="Votre message..." rows={4} className="w-full bg-transparent border-b border-gray-300 pb-3 text-[14px] font-medium text-gray-600 focus:outline-none focus:border-[#0A3123] transition-colors resize-none placeholder-gray-400"></textarea>
+                <textarea placeholder="Votre message..." rows={4} className="w-full bg-transparent border-b border-gray-300 pb-3 text-[14px] font-medium text-gray-600 focus:outline-none focus:border-[#0d2d38] transition-colors resize-none placeholder-gray-400"></textarea>
               </div>
 
               <div className="pt-2">
@@ -207,7 +207,7 @@ export function Footer() {
           </div>
           <button 
             onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })} 
-            className="w-10 h-10 ml-2 bg-[#FCD116] flex items-center justify-center hover:bg-[#CE1126] hover:text-white transition-colors shadow-sm text-[#0A3123]"
+            className="w-10 h-10 ml-2 bg-[#FCD116] flex items-center justify-center hover:bg-[#CE1126] hover:text-white transition-colors shadow-sm text-[#0d2d38]"
             aria-label="Scroll to top"
           >
             <ChevronUp className="w-5 h-5" />
