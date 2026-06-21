@@ -4,236 +4,206 @@ import { useState, useEffect } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { motion, AnimatePresence } from "framer-motion";
-import { ChevronRight, ArrowRight, BookOpen, Layers, CheckCircle2, CreditCard } from "lucide-react";
-import { db } from "@/lib/db";
+import { ChevronRight, ArrowRight, BookOpen, Clock, Users, Calendar } from "lucide-react";
+import { getFormations, Formation } from "@/lib/services/formations";
 
-const generateSlug = (text: string) => {
-  return text
-    .toLowerCase()
-    .normalize("NFD")
-    .replace(/[\u0300-\u036f]/g, "")
-    .replace(/[^a-z0-9]+/g, "-")
-    .replace(/(^-|-$)+/g, "");
+const categoryLabels: Record<string, string> = {
+  "logistique": "Logistique",
+  "transport": "Transport",
+  "supply-chain": "Supply Chain",
+  "douane": "Transit & Douane",
+  "securite": "Sécurité Routière"
+};
+
+const categoryColors: Record<string, string> = {
+  "transport": "bg-rouge text-white",
+  "logistique": "bg-[#FCD116] text-gray-900",
+  "supply-chain": "bg-accent text-white",
+  "douane": "bg-vert text-white",
+  "securite": "bg-vert text-white"
 };
 
 const categoryImages: Record<string, string> = {
-  "Informatique Bureautique": "/images/gallery.png",
-  "Gestion": "/images/about.png",
-  "Logistique et Transport": "/images/hero.png",
-  "QHSE": "/images/hero.png",
-  "Analyse des Données": "/images/gallery.png",
-  "Communication Digitale": "/images/about.png",
-  "Infographie": "/images/gallery.png",
-  "Suivi-Évaluation de Projets": "/images/about.png",
+  "logistique": "https://images.unsplash.com/photo-1586528116311-ad8dd3c8310d?q=80&w=600&fit=crop",
+  "transport": "https://images.unsplash.com/photo-1508962914676-134849a727f0?q=80&w=600&fit=crop",
+  "supply-chain": "https://images.unsplash.com/photo-1578575437130-527eed3abbec?q=80&w=600&fit=crop",
+  "douane": "https://images.unsplash.com/photo-1521791136368-1a8b3d88a2e5?q=80&w=600&fit=crop",
+  "securite": "https://images.unsplash.com/photo-1454165804606-c3d57bc86b40?q=80&w=600&fit=crop"
 };
 
 export default function FormationsPage() {
   const [activeCategory, setActiveCategory] = useState<string>("Tous");
-  const [formations, setFormations] = useState<any[]>([]);
+  const [formations, setFormations] = useState<Formation[]>([]);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const loadFormations = async () => {
-      await db.init();
-      setFormations(await db.getFormations());
+    const loadData = async () => {
+      try {
+        const list = await getFormations(true);
+        setFormations(list);
+      } catch (err) {
+        console.error(err);
+      } finally {
+        setLoading(false);
+      }
     };
-    loadFormations();
+    loadData();
   }, []);
 
-  const categories = ["Tous", ...Array.from(new Set(formations.map((f) => f.categorie)))];
+  const categories = ["Tous", "logistique", "transport", "supply-chain", "douane", "securite"];
 
-  const filteredFormations = formations.reduce((acc, cat) => {
-    if (activeCategory === "Tous" || activeCategory === cat.categorie) {
-      cat.modules.forEach((mod: any) => {
-        acc.push({
-          ...mod,
-          categorie: cat.categorie,
-          slug: generateSlug(mod.titre),
-        });
-      });
-    }
-    return acc;
-  }, [] as any[]);
+  const filteredFormations = formations.filter(f => 
+    activeCategory === "Tous" || f.categorie === activeCategory
+  );
 
   return (
     <>
-      {/* PAGE HERO — Schule: solid blue bg, no gradient, image bg subtle */}
-      <section className="bg-[var(--color-primary)] py-20 relative overflow-hidden">
-        <Image
-          src="/images/hero.png"
-          alt="Formations CFIG"
-          fill
-          sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
-          priority
-          className="object-cover opacity-20"
-        />
+      {/* PAGE HERO */}
+      <section className="bg-primary py-20 relative overflow-hidden text-white">
+        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,rgba(255,255,255,0.1),transparent)] opacity-25" />
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
           <motion.div initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.4 }}>
             {/* Breadcrumb */}
-            <div className="flex items-center text-xs font-bold uppercase tracking-widest text-white/60 mb-4 gap-2">
+            <div className="flex items-center text-[10px] font-bold uppercase tracking-widest text-white/60 mb-4 gap-2">
               <Link href="/" className="hover:text-white transition-colors">Accueil</Link>
-              <ChevronRight className="w-3.5 h-3.5 text-[var(--color-light)]" />
-              <span className="text-[var(--color-light)]">Formations</span>
+              <ChevronRight className="w-3.5 h-3.5 text-secondary" />
+              <span className="text-secondary">Formations</span>
             </div>
-            <h1 className="text-4xl md:text-5xl font-heading font-bold text-white mb-4">
-              Nos Formations
+            <h1 className="text-3xl md:text-5xl font-heading font-black uppercase tracking-tight mb-4">
+              Nos Formations Certifiantes
             </h1>
-            <p className="text-white/70 max-w-xl font-sans text-base leading-relaxed">
-              Des programmes professionnalisants 100% pratiques, conçus pour acquérir les compétences les plus demandées par les recruteurs.
+            <p className="text-white/70 max-w-xl font-sans text-xs sm:text-sm leading-relaxed">
+              Des programmes de formation 100% pratiques conçus pour acquérir les compétences réelles demandées par les recruteurs du secteur logistique & transport.
             </p>
           </motion.div>
         </div>
       </section>
 
-      {/* FILTER TABS + GRID */}
-      <section className="py-16 bg-[var(--color-gray)] min-h-screen">
+      {/* FILTER TABS & CATALOG GRID */}
+      <section className="py-16 bg-surface min-h-screen">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
 
-          {/* Filter tabs — Schule: text tabs with bottom underline, no pill/rounded */}
-          <div className="flex flex-wrap gap-1 mb-12 border-b border-gray-200">
+          {/* Filter tabs */}
+          <div className="flex flex-wrap gap-2 mb-12 border-b border-gray-200">
             {categories.map((cat, index) => (
               <button
                 key={index}
                 onClick={() => setActiveCategory(cat)}
-                className={`px-4 py-3 text-xs font-bold uppercase tracking-wider transition-colors border-b-[3px] -mb-[1px] ${
+                className={`px-4 py-3 text-[10px] font-bold uppercase tracking-widest transition-colors border-b-[3px] -mb-[2px] ${
                   activeCategory === cat
-                    ? "border-[var(--color-accent)] text-[var(--color-primary)]"
-                    : "border-transparent text-gray-500 hover:text-[var(--color-primary)] hover:border-gray-300"
+                    ? "border-primary text-primary"
+                    : "border-transparent text-gray-500 hover:text-primary hover:border-gray-300"
                 }`}
               >
-                {cat}
+                {cat === "Tous" ? "Tous" : (categoryLabels[cat] || cat)}
               </button>
             ))}
           </div>
 
-          {/* Grid */}
-          <motion.div layout className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            <AnimatePresence mode="popLayout">
-              {filteredFormations.map((formation: any) => {
-                const imageSrc = formation.image || categoryImages[formation.categorie] || "/images/gallery.png";
-                return (
-                  <motion.div
-                    key={formation.slug}
-                    layout
-                    initial={{ opacity: 0 }}
-                    animate={{ opacity: 1 }}
-                    exit={{ opacity: 0 }}
-                    transition={{ duration: 0.25 }}
-                    className="bg-white border border-gray-200 hover:border-[var(--color-accent)] hover:shadow-md transition-all duration-300 group flex flex-col"
-                  >
-                    {/* Image header */}
-                    <div className="h-48 relative overflow-hidden">
-                      <img
-                        src={imageSrc}
-                        alt={formation.titre}
-                        className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
-                      />
-                      <span className="absolute top-0 left-0 bg-[var(--color-primary)] text-white text-[9px] font-bold px-3 py-1.5 uppercase tracking-wider">
-                        {formation.categorie}
-                      </span>
-                    </div>
+          {/* Catalogue Loader */}
+          {loading ? (
+            <div className="flex justify-center items-center py-24">
+              <div className="w-12 h-12 border-4 border-accent border-t-transparent rounded-full animate-spin"></div>
+            </div>
+          ) : (
+            <motion.div layout className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+              <AnimatePresence mode="popLayout">
+                {filteredFormations.map((formation) => {
+                  const imageSrc = categoryImages[formation.categorie] || "https://images.unsplash.com/photo-1586528116311-ad8dd3c8310d?q=80&w=600&fit=crop";
+                  const colorClass = categoryColors[formation.categorie] || "bg-primary text-white";
+                  const dateStr = formation.prochaineSession 
+                    ? (typeof formation.prochaineSession.toDate === "function" 
+                        ? formation.prochaineSession.toDate().toLocaleDateString('fr-FR', { day: 'numeric', month: 'long', year: 'numeric' })
+                        : String(formation.prochaineSession)) 
+                    : "";
 
-                    {/* Body */}
-                    <div className="p-6 flex-grow flex flex-col">
-                      <div className="flex items-center gap-2 text-[var(--color-accent)] text-[10px] font-bold uppercase tracking-widest mb-3">
-                        <BookOpen className="w-3.5 h-3.5" />
-                        Module certifiant
+                  return (
+                    <motion.div
+                      key={formation.id}
+                      layout
+                      initial={{ opacity: 0, y: 15 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      exit={{ opacity: 0 }}
+                      transition={{ duration: 0.25 }}
+                      className="bg-white border border-gray-200 hover:border-primary hover:shadow-md transition-all duration-300 flex flex-col group"
+                    >
+                      {/* Course Image */}
+                      <div className="h-48 relative overflow-hidden bg-gray-100">
+                        <img
+                          src={imageSrc}
+                          alt={formation.titre}
+                          className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                        />
+                        <span className={`absolute top-4 left-4 text-[9px] font-bold px-2.5 py-1 uppercase tracking-widest ${colorClass}`}>
+                          {categoryLabels[formation.categorie] || formation.categorie}
+                        </span>
                       </div>
 
-                      <h3 className="text-lg font-heading font-bold text-[var(--color-primary)] mb-4 leading-snug group-hover:text-[var(--color-accent)] transition-colors line-clamp-2 min-h-[3.5rem]">
-                        {formation.titre}
-                      </h3>
+                      {/* Content Body */}
+                      <div className="p-6 flex-grow flex flex-col justify-between">
+                        <div className="space-y-4">
+                          <h3 className="text-base font-heading font-black text-primary uppercase leading-tight line-clamp-2 min-h-[2.5rem] group-hover:text-secondary transition-colors">
+                            {formation.titre}
+                          </h3>
 
-                      <div className="h-px w-full bg-gray-100 mb-4" />
-
-                      {/* Prix + Méthode de paiement */}
-                      {(formation.prix !== undefined || formation.prixInscription !== undefined || formation.methodePaiement) && (
-                        <div className="mb-4 p-3 bg-gray-50 border border-gray-100 flex flex-col gap-2">
-                          <div className="flex justify-between items-start">
-                            <div className="flex flex-col gap-1.5">
-                              {formation.prix !== undefined && (
-                                <div>
-                                  <span className="text-[9px] uppercase tracking-wider text-gray-500 font-bold block mb-0.5">Formation</span>
-                                  <div className="text-base font-black text-[#8B0000] leading-none">
-                                    {formation.prix.toLocaleString('fr-GN')} <span className="text-[10px] font-bold tracking-wider">GNF</span>
-                                  </div>
-                                </div>
-                              )}
-                              {formation.prixInscription !== undefined && (
-                                <div>
-                                  <span className="text-[9px] uppercase tracking-wider text-gray-500 font-bold block mb-0.5">Inscription</span>
-                                  <div className="text-sm font-bold text-gray-800 leading-none">
-                                    {formation.prixInscription.toLocaleString('fr-GN')} <span className="text-[9px] font-bold tracking-wider">GNF</span>
-                                  </div>
-                                </div>
-                              )}
+                          {/* Quick specs */}
+                          <div className="grid grid-cols-2 gap-3 text-[10px] text-gray-500 font-sans border-t border-b border-gray-100 py-3">
+                            <div className="flex items-center gap-1.5">
+                              <Clock className="w-3.5 h-3.5 text-secondary flex-shrink-0" />
+                              <span>{formation.duree}</span>
                             </div>
-                            {(formation.prix !== undefined || formation.prixInscription !== undefined) && (
-                              <span className="text-[9px] font-bold bg-[#8B0000] text-white px-2 py-1 uppercase tracking-wider shrink-0 mt-1">
-                                Tarifs
-                              </span>
+                            <div className="flex items-center gap-1.5">
+                              <Users className="w-3.5 h-3.5 text-secondary flex-shrink-0" />
+                              <span>100% Pratique</span>
+                            </div>
+                            {dateStr && (
+                              <div className="col-span-2 flex items-center gap-1.5">
+                                <Calendar className="w-3.5 h-3.5 text-secondary flex-shrink-0" />
+                                <span>Session : {dateStr}</span>
+                              </div>
                             )}
                           </div>
-                          {formation.methodePaiement && (
-                            <div className="flex items-center gap-1 mt-1 border-t border-gray-200 pt-2">
-                              <CreditCard className="w-3 h-3 text-gray-400" />
-                              <span className="text-[10px] text-gray-500 font-medium">Paiement : {formation.methodePaiement}</span>
-                            </div>
-                          )}
+
+                          <p className="text-gray-650 text-[11px] leading-relaxed line-clamp-3">
+                            {formation.description}
+                          </p>
                         </div>
-                      )}
 
-                      {/* Tools */}
-                      <div className="mb-5 flex-grow">
-                        <div className="flex items-center gap-1.5 text-xs font-bold text-gray-500 uppercase tracking-wider mb-2">
-                          <Layers className="w-3.5 h-3.5 text-gray-400" />
-                          Outils
+                        {/* Card footer (Tarifs & Register CTAs) */}
+                        <div className="pt-6 border-t border-gray-100 flex items-center justify-between mt-6">
+                          <div className="flex flex-col">
+                            <span className="text-[9px] uppercase tracking-wider font-bold text-gray-400">Tarif</span>
+                            <span className="text-sm font-black text-rouge">
+                              {formation.tarif.toLocaleString('fr-GN')} GNF
+                            </span>
+                          </div>
+                          <div className="flex gap-2">
+                            <Link
+                              href={`/formations/${formation.slug}`}
+                              className="text-[10px] font-bold uppercase tracking-wider text-primary border border-gray-200 px-3 py-2 hover:bg-gray-50 transition-colors"
+                            >
+                              Détails
+                            </Link>
+                            <Link
+                              href={`/contact?subject=Inscription - ${encodeURIComponent(formation.titre)}`}
+                              className="bg-primary hover:bg-rouge text-white font-bold text-[10px] uppercase tracking-wider px-3 py-2 transition-colors"
+                            >
+                              S'inscrire
+                            </Link>
+                          </div>
                         </div>
-                        {formation.outils && formation.outils.length > 0 ? (
-                          <div className="flex flex-wrap gap-1.5">
-                            {formation.outils.map((outil: string, i: number) => (
-                              <span
-                                key={i}
-                                className="px-2 py-0.5 bg-[var(--color-gray)] border border-gray-200 text-gray-600 text-[10px] font-medium"
-                              >
-                                {outil}
-                              </span>
-                            ))}
-                          </div>
-                        ) : (
-                          <div className="flex items-center gap-1.5 text-xs text-gray-500 italic">
-                            <CheckCircle2 className="w-3.5 h-3.5 text-[var(--color-accent)]" />
-                            Théorie &amp; pratique métier
-                          </div>
-                        )}
                       </div>
+                    </motion.div>
+                  );
+                })}
+              </AnimatePresence>
+            </motion.div>
+          )}
 
-                      {/* CTA */}
-                      <div className="pt-4 border-t border-gray-100 flex items-center justify-between mt-auto">
-                        <Link
-                          href={`/formations/${formation.slug}`}
-                          className="text-[11px] font-bold uppercase tracking-widest text-[var(--color-primary)] hover:text-[#8B0000] transition-colors flex items-center gap-1"
-                        >
-                          En savoir plus <ArrowRight className="w-3 h-3" />
-                        </Link>
-                        <Link
-                          href="/inscription"
-                          className="bg-[var(--color-primary)] hover:bg-[#8B0000] text-white font-bold text-[9px] uppercase tracking-widest px-4 py-2.5 transition-colors"
-                        >
-                          S'inscrire
-                        </Link>
-                      </div>
-                    </div>
-                  </motion.div>
-
-                );
-              })}
-            </AnimatePresence>
-          </motion.div>
-
-          {filteredFormations.length === 0 && (
-            <div className="text-center py-24 bg-white border border-gray-200">
-              <BookOpen className="w-10 h-10 text-gray-300 mx-auto mb-3" />
-              <p className="text-gray-500 font-medium">Aucun module pour cette catégorie.</p>
+          {!loading && filteredFormations.length === 0 && (
+            <div className="text-center py-24 bg-white border border-gray-200 shadow-sm">
+              <BookOpen className="w-12 h-12 text-gray-350 mx-auto mb-3" />
+              <p className="text-gray-500 font-medium text-sm">Aucun module pour cette catégorie actuellement.</p>
             </div>
           )}
         </div>

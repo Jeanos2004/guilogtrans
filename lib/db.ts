@@ -1,4 +1,3 @@
-import { formationsData, testimonialsData } from "./data";
 import { firestore } from "./firebase";
 import {
   collection,
@@ -13,31 +12,32 @@ import { StudentProfile } from "./studentDb";
 // === TYPES ===
 
 export interface FormationDetails {
-  presentation?: string;          // Description libre de la formation
-  objectifs?: string[];           // Objectifs pédagogiques (liste)
-  prerequis?: string[];           // Prérequis (liste)
-  publicCible?: string[];         // À qui s'adresse la formation (liste)
-  programme?: {                   // Programme détaillé (modules/chapitres)
+  presentation?: string;          
+  objectifs?: string[];           
+  prerequis?: string[];           
+  publicCible?: string[];         
+  programme?: {                   
     title: string;
     points: string[];
   }[];
-  duree?: string;                 // Ex: "2 mois", "80 heures"
-  dateDebut?: string;             // Ex: "15 Juillet 2026"
-  calendrier?: string;            // Ex: "Lundi, Mercredi, Vendredi"
-  horaires?: string;              // Ex: "18h00 – 20h00"
-  statutInscription?: "Ouverte" | "Fermée"; // Contrôle le bouton d'inscription
-  debouches?: string[];           // Les emplois/opportunités professionnelles (liste)
-  planning?: { jour: string; horaire: string }[]; // Jours et horaires de la formation
+  programmeUrl?: string;
+  duree?: string;                 
+  dateDebut?: string;             
+  calendrier?: string;            
+  horaires?: string;              
+  statutInscription?: "Ouverte" | "Fermée"; 
+  debouches?: string[];           
+  planning?: { jour: string; horaire: string }[]; 
 }
 
 export interface ModuleItem {
   titre: string;
   outils: string[];
-  prix?: number;           // Prix de la formation (coût total)
-  prixInscription?: number; // Frais d'inscription séparés
+  prix?: number;           
+  prixInscription?: number; 
   methodePaiement?: string;
   image?: string;
-  details?: FormationDetails;     // Toutes les infos détaillées
+  details?: FormationDetails;     
 }
 
 export interface CategorieFormations {
@@ -88,14 +88,9 @@ export interface Testimonial {
   text: string;
   rating: number;
   active: boolean;
-  /** Testimonial type:
-   * - "standard"       → text card with optional portrait photo (21st.dev style)
-   * - "standard"       → text card with optional portrait photo
-   * - "video"          → video testimonial (displayed in landscape style)
-   */
   type?: "standard" | "video";
-  image?: string;    // Portrait photo URL (for standard type or video cover)
-  videoUrl?: string; // Video URL (YouTube, Cloudinary…)
+  image?: string;    
+  videoUrl?: string; 
 }
 
 export interface GalleryItem {
@@ -121,45 +116,79 @@ export interface AdminUser {
   status: "actif" | "suspendu";
 }
 
+// === UTILITIES ===
+
+const generateSlug = (text: string) => {
+  return text
+    .toLowerCase()
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/(^-|-$)+/g, "");
+};
+
+function mapCategoryToKey(catName: string): string {
+  const norm = catName.toLowerCase().trim();
+  if (norm.includes('transport')) return 'transport';
+  if (norm.includes('supply') || norm.includes('chain')) return 'supply-chain';
+  if (norm.includes('douane') || norm.includes('transit')) return 'douane';
+  if (norm.includes('securite') || norm.includes('sécurité')) return 'securite';
+  return 'logistique'; 
+}
+
+const displayCategoryMap: Record<string, string> = {
+  'logistique': 'Logistique',
+  'transport': 'Transport',
+  'supply-chain': 'Supply Chain',
+  'douane': 'Douane',
+  'securite': 'Sécurité'
+};
+
 // === DEFAULT DATA ===
 
 const defaultArticles: Article[] = [
   {
     id: 1,
-    title: "Cérémonie de remise des certificats - Promotion 2024",
-    excerpt: "Retour en images sur la cérémonie de remise des attestations aux 150 apprenants de la cohorte 2024. Un moment riche en émotions et en opportunités.",
-    content: "La grande salle de conférence de CFIG Guinée a vibré au rythme de la célébration le 15 mai dernier. En effet, la cérémonie solennelle de remise des attestations de fin de formation a réuni plus de 150 apprenants de la promotion 2024, marquant l'aboutissement de plusieurs mois d'efforts et d'apprentissage intensif.\n\nPrésidée par la direction du cabinet et en présence de nombreux invités d'honneur du secteur privé et public, cette cérémonie a été l'occasion de valoriser le travail remarquable accompli par les apprenants dans des domaines variés tels que l'Analyse de Données (PowerBI/Excel), la Gestion de la Paie, la Logistique ou encore le Community Management.\n\nLe Directeur de CFIG Guinée, M. Ousmane Condé, a tenu à féliciter chaleureusement les diplômés : \"Vous repartez aujourd'hui non seulement avec un certificat, mais avec des compétences opérationnelles concrètes et directement applicables. Le marché de l'emploi en Guinée a besoin de professionnels qualifiés et pratiques. Vous êtes désormais prêts à relever ce défi.\"\n\nPlusieurs témoignages d'apprenants et de recruteurs partenaires ont ponctué l'événement, soulignant l'impact direct des formations CFIG sur l'employabilité et la performance en entreprise. La journée s'est clôturée by un cocktail de réseautage, permettant aux nouveaux certifiés d'échanger avec les professionnels présents et d'ouvrir de nouvelles opportunités de carrière.",
-    date: "2026-05-15",
+    title: "Démarrage de la session Gestion des Stocks & Approvisionnements",
+    excerpt: "Retour sur le lancement de notre session de formation pratique réunissant les professionnels de plusieurs grandes entreprises de Conakry.",
+    content: "Ce lundi a débuté au Cabinet Guilogtrans la session intensive sur la Gestion des Stocks et des Approvisionnements. Durant 5 jours, nos participants issus de secteurs variés (mines, BTP, commerce) vont acquérir des méthodologies concrètes pour optimiser leurs inventaires et piloter leurs flux sous la supervision de notre expert formateur.",
+    date: "2026-06-15",
     author: "Direction",
-    category: "Événements",
+    category: "Actualités",
     image: "/images/news_hero.png"
   },
   {
     id: 2,
-    title: "L'importance de PowerBI dans la prise de décision stratégique",
-    excerpt: "Découvrez pourquoi maîtriser PowerBI est devenu un atout indispensable pour les managers et analystes en entreprise aujourd'hui.",
-    content: "Dans un environnement économique de plus en plus concurrentiel et digitalisé, la donnée est devenue le nouvel or noir des entreprises. Cependant, accumuler des données ne sert à rien si on ne sait pas les analyser ni les restituer sous forme d'informations exploitables. C'est là que Microsoft PowerBI s'impose comme un outil incontournable.\n\nPowerBI permet de connecter des sources de données multiples (bases de données SQL, fichiers Excel, services Cloud), de nettoyer et modéliser ces données, et de créer des rapports et tableaux de bord interactifs en temps réel. Pour les managers, directeurs et décideurs, l'avantage est immense : au lieu de naviguer à vue ou de dépendre de rapports Excel statiques souvent obsolètes, ils disposent d'indicateurs clés de performance (KPI) clairs, mis à jour automatiquement et accessibles d'un simple clic sur ordinateur ou mobile.\n\nAu sein de CFIG Guinée, nous constatons une demande croissante des entreprises locales pour former leurs collaborateurs (financiers, logisticiens, RH, contrôleurs de gestion) sur PowerBI. Maîtriser cet outil ne se limite pas à savoir concevoir des graphiques ; cela permet de transformer la culture de l'entreprise en orientant chaque décision sur des faits précis et mesurables. En devenant un expert PowerBI, vous apportez une valeur ajoutée stratégique indéniable à votre organisation et accélérez votre évolution professionnelle.",
-    date: "2026-05-02",
-    author: "Ousmane Condé",
+    title: "Les tendances majeures de la logistique en Guinée pour 2026",
+    excerpt: "Découvrez comment le développement des infrastructures portuaires et minières transforme la supply chain nationale.",
+    content: "La logistique en Guinée connaît une profonde mutation. Avec l'essor des grands projets miniers (comme le projet Simandou) et la modernisation des infrastructures du Port Autonome de Conakry, les besoins en optimisation des transports et gestion de supply chain performante n'ont jamais été aussi élevés.",
+    date: "2026-06-02",
+    author: "Expert Guilogtrans",
     category: "Conseils",
     image: "/images/about.png"
-  },
-  {
-    id: 3,
-    title: "Nouveau partenariat avec l'Université de Conakry",
-    excerpt: "CFIG Guinée est fier d'annoncer son partenariat stratégique pour accompagner les étudiants en fin de cycle vers l'employabilité.",
-    content: "C'est une étape majeure pour l'insertion professionnelle des jeunes diplômés en Guinée. Le Cabinet de Formation Informatique de Gestion (CFIG Guinée) a officialisé la signature d'un protocole d'accord de partenariat stratégique avec l'Université de Conakry.\n\nCe partenariat vise à combler le fossé souvent constaté entre la formation théorique universitaire et les exigences pratiques du marché du travail. Dans le cadre de cet accord, CFIG Guinée déploiera des programmes de renforcement des compétences intensifs et orientés métiers pour les étudiants en fin de cycle universitaire.\n\nLes modules de formation porteront sur les outils bureautiques avancés, les logiciels de gestion comptable et commerciale (SAGE), ainsi que l'initiation à l'analyse de données. Des sessions spécifiques sur le développement des soft skills et la préparation aux entretiens d'embauche seront également animées par nos experts formateurs.\n\n\"Nous croyons fermement au potentiel de la jeunesse guinéenne. Ce partenariat est notre contribution pour outiller les étudiants avec les compétences réelles que recherchent les recruteurs aujourd'hui\", a déclaré le responsable des relations publiques de CFIG Guinée lors de la signature officielle.\n\nLes premières cohortes d'étudiants débuteront leurs sessions dès le mois prochain au sein des locaux de l'université et dans les salles de classe équipées de CFIG Guinée.",
-    date: "2026-04-20",
-    author: "Relations Publiques",
-    category: "Partenariats",
-    image: "/images/hero.png"
   }
 ];
 
-const defaultTestimonials: Testimonial[] = testimonialsData.map(t => ({
-  ...t,
-  active: true
-}));
+const defaultTestimonials: Testimonial[] = [
+  {
+    name: "Mamadou Diallo",
+    role: "Responsable Transport & Logistique",
+    initials: "MD",
+    color: "bg-blue-100 text-blue-800",
+    text: "La formation sur l'optimisation des routes et de la flotte de transport dispensée par Guilogtrans a permis à notre équipe de réduire de 15% nos coûts de carburant en seulement 3 mois.",
+    rating: 5,
+    active: true
+  },
+  {
+    name: "Aissatou Sylla",
+    role: "Gestionnaire de Stock",
+    initials: "AS",
+    color: "bg-green-100 text-green-800",
+    text: "Une formation extrêmement pratique axée sur des cas concrets d'entrepôt. L'accompagnement post-formation m'a aidé à restructurer entièrement nos procédures d'inventaire.",
+    rating: 5,
+    active: true
+  }
+];
 
 const defaultInscriptions: InscriptionRequest[] = [
   {
@@ -169,22 +198,10 @@ const defaultInscriptions: InscriptionRequest[] = [
     phone: "+224 622 11 22 33",
     company: "Société des Eaux de Guinée",
     requestType: "Formation en entreprise",
-    domain: "Analyse des Données",
-    message: "Demande de formation sur PowerBI pour notre équipe de contrôle financier.",
-    date: "2026-05-28T14:32:00Z",
+    domain: "Logistique",
+    message: "Demande de formation sur la gestion des stocks pour notre équipe de dépôt.",
+    date: "2026-06-18T14:32:00Z",
     status: "En attente"
-  },
-  {
-    id: "REG-1243",
-    fullName: "Aicha Sylla",
-    email: "aicha.sylla@gmail.com",
-    phone: "+224 626 44 55 66",
-    company: "",
-    requestType: "Inscription individuelle",
-    domain: "Gestion",
-    message: "Je souhaite m'inscrire au module de Sage Comptabilité.",
-    date: "2026-05-30T10:15:00Z",
-    status: "Validé"
   }
 ];
 
@@ -194,8 +211,8 @@ const defaultMessages: ContactMessage[] = [
     fullName: "Kadiatou Diallo",
     email: "kadiatou.d@gmail.com",
     subject: "Demande de tarifs",
-    message: "Bonjour, j'aimerais obtenir la grille tarifaire complète pour vos formations individuelles en bureautique.",
-    date: "2026-05-29T09:00:00Z",
+    message: "Bonjour, j'aimerais obtenir la grille tarifaire complète pour vos formations en logistique.",
+    date: "2026-06-19T09:00:00Z",
     status: "Non lu"
   }
 ];
@@ -206,18 +223,91 @@ export const db = {
   // Formations
   async getFormations(): Promise<CategorieFormations[]> {
     try {
-      const docSnap = await getDoc(doc(firestore, "formations", "all"));
-      if (docSnap.exists()) {
-        return docSnap.data().categories as CategorieFormations[];
+      const snap = await getDocs(collection(firestore, "formations"));
+      if (!snap.empty) {
+        const flatList = snap.docs.map(d => ({ id: d.id, ...d.data() } as any));
+        const categoriesMap: Record<string, any[]> = {};
+        flatList.forEach(item => {
+          const rawCat = item.categorie || 'logistique';
+          const catName = displayCategoryMap[rawCat] || rawCat;
+          if (!categoriesMap[catName]) {
+            categoriesMap[catName] = [];
+          }
+          categoriesMap[catName].push({
+            titre: item.titre,
+            outils: item.outils || [],
+            prix: item.tarif || 0,
+            image: item.image || '',
+            details: {
+              presentation: item.description || '',
+              objectifs: item.objectifs || [],
+              publicCible: item.publicCible ? [item.publicCible] : [],
+              duree: item.duree || '',
+              dateDebut: item.prochaineSession 
+                ? (typeof item.prochaineSession.toDate === 'function' 
+                    ? item.prochaineSession.toDate().toLocaleDateString('fr-FR') 
+                    : String(item.prochaineSession)) 
+                : '',
+              statutInscription: item.actif ? 'Ouverte' : 'Fermée',
+              programmeUrl: item.programmeUrl || '',
+            }
+          });
+        });
+        return Object.keys(categoriesMap).map(catName => ({
+          categorie: catName,
+          modules: categoriesMap[catName]
+        }));
       }
     } catch (error) {
       console.error("Error fetching formations from Firestore:", error);
     }
-    return formationsData;
+    return [];
   },
+
   async saveFormations(data: CategorieFormations[]): Promise<void> {
     try {
-      await setDoc(doc(firestore, "formations", "all"), { categories: data });
+      const snap = await getDocs(collection(firestore, "formations"));
+      const existingIds = snap.docs.map(d => d.id);
+      
+      const newIds: string[] = [];
+      for (const cat of data) {
+        for (const mod of cat.modules) {
+          const slug = generateSlug(mod.titre);
+          const id = slug;
+          newIds.push(id);
+          
+          let dateObj = new Date();
+          if (mod.details?.dateDebut) {
+            const parsed = Date.parse(mod.details.dateDebut);
+            if (!isNaN(parsed)) dateObj = new Date(parsed);
+          }
+
+          const flatFormation = {
+            slug,
+            titre: mod.titre,
+            categorie: mapCategoryToKey(cat.categorie),
+            description: mod.details?.presentation || '',
+            objectifs: mod.details?.objectifs || [],
+            publicCible: mod.details?.publicCible?.join('\n') || '',
+            duree: mod.details?.duree || '',
+            tarif: mod.prix || 0,
+            formateur: 'Expert Guilogtrans',
+            prochaineSession: dateObj,
+            programmeUrl: mod.details?.programmeUrl || '',
+            actif: mod.details?.statutInscription === 'Ouverte',
+            updatedAt: new Date(),
+            image: mod.image || ''
+          };
+          
+          await setDoc(doc(firestore, "formations", id), flatFormation);
+        }
+      }
+      
+      for (const id of existingIds) {
+        if (!newIds.includes(id)) {
+          await deleteDoc(doc(firestore, "formations", id));
+        }
+      }
     } catch (error) {
       console.error("Error saving formations to Firestore:", error);
     }
@@ -237,6 +327,7 @@ export const db = {
     }
     return defaultArticles;
   },
+
   async saveArticles(data: Article[]): Promise<void> {
     try {
       const snapshot = await getDocs(collection(firestore, "articles"));
@@ -271,6 +362,7 @@ export const db = {
     }
     return defaultInscriptions;
   },
+
   async saveInscriptions(data: InscriptionRequest[]): Promise<void> {
     try {
       const snapshot = await getDocs(collection(firestore, "inscriptions"));
@@ -290,6 +382,7 @@ export const db = {
       console.error("Error saving inscriptions to Firestore:", error);
     }
   },
+
   async addInscription(request: Omit<InscriptionRequest, "id" | "date" | "status">): Promise<InscriptionRequest> {
     const newRequest: InscriptionRequest = {
       ...request,
@@ -319,6 +412,7 @@ export const db = {
     }
     return defaultMessages;
   },
+
   async saveMessages(data: ContactMessage[]): Promise<void> {
     try {
       const snapshot = await getDocs(collection(firestore, "messages"));
@@ -338,6 +432,7 @@ export const db = {
       console.error("Error saving messages to Firestore:", error);
     }
   },
+
   async addMessage(msg: Omit<ContactMessage, "id" | "date" | "status">): Promise<ContactMessage> {
     const newMsg: ContactMessage = {
       ...msg,
@@ -365,6 +460,7 @@ export const db = {
     }
     return defaultTestimonials;
   },
+
   async saveTestimonials(data: Testimonial[]): Promise<void> {
     try {
       await setDoc(doc(firestore, "testimonials", "all"), { list: data });
@@ -384,12 +480,13 @@ export const db = {
       console.error("Error fetching settings from Firestore:", error);
     }
     return {
-      apprenantsForme: 540,
+      apprenantsForme: 500,
       totalHeuresFormation: 1200,
       tauxSatisfaction: 95,
       anneesExperience: 5
     };
   },
+
   async saveSettings(data: SiteSettings): Promise<void> {
     try {
       await setDoc(doc(firestore, "settings", "global"), data);
@@ -412,6 +509,7 @@ export const db = {
     }
     return [];
   },
+
   async saveAdmin(admin: AdminUser): Promise<void> {
     try {
       await setDoc(doc(firestore, "admins", admin.uid), admin);
@@ -419,6 +517,7 @@ export const db = {
       console.error("Error saving admin to Firestore:", error);
     }
   },
+
   async syncAdmin(uid: string, email: string): Promise<void> {
     try {
       const docRef = doc(firestore, "admins", uid);
@@ -435,6 +534,7 @@ export const db = {
       console.error("Error syncing admin in Firestore:", error);
     }
   },
+
   // Gallery
   async getGallery(): Promise<GalleryItem[]> {
     try {
@@ -448,6 +548,7 @@ export const db = {
     }
     return [];
   },
+
   async saveGallery(items: GalleryItem[]): Promise<void> {
     try {
       await setDoc(doc(firestore, "gallery", "all"), { items });
@@ -491,48 +592,172 @@ export const db = {
   // Database Initialization Helper with Auto-Seeding
   async init(): Promise<void> {
     try {
-      const docRef = doc(firestore, "formations", "all");
-      const docSnap = await getDoc(docRef);
+      const snap = await getDocs(collection(firestore, "formations"));
       
-      // Seed site settings first if they don't exist
       const settingsRef = doc(firestore, "settings", "global");
       const settingsSnap = await getDoc(settingsRef);
       if (!settingsSnap.exists()) {
         await setDoc(settingsRef, {
-          apprenantsForme: 540,
+          apprenantsForme: 500,
           totalHeuresFormation: 1200,
           tauxSatisfaction: 95,
           anneesExperience: 5
         });
       }
 
-      if (!docSnap.exists()) {
-        console.log("Firestore database is empty. Seeding default CFIG data...");
+      if (snap.empty) {
+        console.log("Firestore database is empty. Seeding default Guilogtrans data...");
         
-        // Seed formations
-        await setDoc(docRef, { categories: formationsData });
+        const defaultFormations = [
+          {
+            slug: 'gestion-stocks',
+            titre: 'Gestion des stocks et approvisionnement',
+            categorie: 'logistique',
+            description: "Développez une expertise dans la gestion rationnelle des stocks et la chaîne d'approvisionnement globale. Apprenez à optimiser les coûts de possession, éviter les ruptures et modéliser des plannings d'approvisionnement performants.",
+            objectifs: [
+              "Calculer et optimiser le stock de sécurité",
+              "Concevoir des indicateurs de performance (rotation, couverture)",
+              "Maîtriser les techniques d'inventaire physique",
+              "Mettre en place une planification de réapprovisionnement sous Excel"
+            ],
+            publicCible: "Gestionnaires de stock, logisticiens, approvisionneurs, directeurs financiers, responsables de dépôt.",
+            duree: '5 jours',
+            tarif: 2500000,
+            formateur: 'Expert Guilogtrans',
+            prochaineSession: new Date('2026-07-15'),
+            programmeUrl: '',
+            actif: true,
+            createdAt: new Date(),
+            updatedAt: new Date()
+          },
+          {
+            slug: 'optimisation-routes',
+            titre: 'Optimisation des routes de transport',
+            categorie: 'transport',
+            description: "Optimisez la distribution physique de vos marchandises en réduisant les coûts opérationnels de transport. Cette formation pratique vous apprendra à planifier les tournées, choisir les bons prestataires et calculer le prix de revient kilométrique.",
+            objectifs: [
+              "Établir des plans de transport et schémas de distribution",
+              "Optimiser les taux de remplissage des véhicules",
+              "Utiliser des outils de cartographie pour planifier les tournées",
+              "Réduire l'impact carbone et énergétique de la flotte"
+            ],
+            publicCible: "Responsables transport, répartiteurs de flotte, coordinateurs logistiques, transitaires.",
+            duree: '3 jours',
+            tarif: 1800000,
+            formateur: 'Expert Guilogtrans',
+            prochaineSession: new Date('2026-07-22'),
+            programmeUrl: '',
+            actif: true,
+            createdAt: new Date(),
+            updatedAt: new Date()
+          },
+          {
+            slug: 'reglementation-douaniere',
+            titre: 'Réglementation douanière & transit',
+            categorie: 'douane',
+            description: "Maîtrisez les procédures douanières à l'importation et à l'exportation en Guinée et dans l'espace CEDEAO. Évitez les litiges douaniers, apprenez à déclarer vos marchandises et déterminez l'espèce tarifaire (code SH).",
+            objectifs: [
+              "Déterminer l'origine, la valeur et l'espèce douanière d'un produit",
+              "Maîtriser les étapes du dédouanement (Sydonia)",
+              "Rédiger et contrôler les documents de transit import-export",
+              "Anticiper et gérer les contentieux douaniers"
+            ],
+            publicCible: "Déclarants en douane, transitaires, responsables import-export, juristes d'entreprise.",
+            duree: '4 jours',
+            tarif: 2200000,
+            formateur: 'Expert Guilogtrans',
+            prochaineSession: new Date('2026-08-05'),
+            programmeUrl: '',
+            actif: true,
+            createdAt: new Date(),
+            updatedAt: new Date()
+          },
+          {
+            slug: 'management-supply-chain',
+            titre: 'Management de la supply chain',
+            categorie: 'supply-chain',
+            description: "Pilotez l'ensemble des flux physiques et d'information de l'entreprise, des fournisseurs aux clients finaux. Cette formation de haut niveau présente les meilleures pratiques de planification industrielle et commerciale (S&OP) et de pilotage logistique global.",
+            objectifs: [
+              "Cartographier les flux de la chaîne logistique (Value Stream Map)",
+              "Aligner la logistique sur la stratégie générale de l'entreprise",
+              "Mettre en œuvre des systèmes de mesure de performance globale",
+              "Gérer les risques et la résilience de la supply chain"
+            ],
+            publicCible: "Directeurs logistiques, supply chain managers, cadres dirigeants, chefs de projets industriels.",
+            duree: '5 jours',
+            tarif: 3000000,
+            formateur: 'Expert Guilogtrans',
+            prochaineSession: new Date('2026-08-12'),
+            programmeUrl: '',
+            actif: true,
+            createdAt: new Date(),
+            updatedAt: new Date()
+          },
+          {
+            slug: 'securite-routiere',
+            titre: 'Sécurité routière et conduite professionnelle',
+            categorie: 'securite',
+            description: "Réduisez les risques d'accidents et optimisez la conduite professionnelle au sein de votre entreprise. Cette formation sensibilise aux règles de sécurité, à l'éco-conduite et à la gestion technique et préventive des véhicules de transport.",
+            objectifs: [
+              "Appliquer les règles fondamentales de la sécurité routière professionnelle",
+              "Adopter les principes de l'éco-conduite (économie de carburant)",
+              "Effectuer les contrôles préventifs obligatoires sur les véhicules",
+              "Réagir efficacement en cas d'accident ou de panne sur la route"
+            ],
+            publicCible: "Chauffeurs professionnels, conducteurs de véhicules d'entreprise, gestionnaires de flotte.",
+            duree: '2 jours',
+            tarif: 1200000,
+            formateur: 'Expert Guilogtrans',
+            prochaineSession: new Date('2026-08-19'),
+            programmeUrl: '',
+            actif: true,
+            createdAt: new Date(),
+            updatedAt: new Date()
+          },
+          {
+            slug: 'logistique-internationale',
+            titre: 'Logistique internationale & Incoterms',
+            categorie: 'logistique',
+            description: "Maîtrisez les rouages du transport international de marchandises et appliquez correctement les règles Incoterms 2020. Choisissez le mode de transport adéquat (maritime, aérien, routier) et gérez les documents de transport associés.",
+            objectifs: [
+              "Choisir et appliquer l'Incoterm optimal pour chaque transaction",
+              "Négocier et conclure les contrats de transport international",
+              "Rédiger et valider les documents clés (Connaissement maritime, LTA, CMR)",
+              "Souscrire les polices d'assurance transport appropriées"
+            ],
+            publicCible: "Acheteurs internationaux, logisticiens export, négociants, transitaires, banquiers documentaires.",
+            duree: '3 jours',
+            tarif: 2000000,
+            formateur: 'Expert Guilogtrans',
+            prochaineSession: new Date('2026-09-02'),
+            programmeUrl: '',
+            actif: true,
+            createdAt: new Date(),
+            updatedAt: new Date()
+          }
+        ];
         
-        // Seed testimonials
+        for (const f of defaultFormations) {
+          await setDoc(doc(firestore, "formations", f.slug), f);
+        }
+        
         await setDoc(doc(firestore, "testimonials", "all"), { list: defaultTestimonials });
         
-        // Seed articles
         for (const article of defaultArticles) {
           await setDoc(doc(firestore, "articles", String(article.id)), article);
         }
         
-        // Seed inscriptions
         for (const ins of defaultInscriptions) {
           await setDoc(doc(firestore, "inscriptions", ins.id), ins);
         }
         
-        // Seed messages
         for (const msg of defaultMessages) {
           await setDoc(doc(firestore, "messages", msg.id), msg);
         }
-        console.log("Firestore database successfully seeded!");
+        console.log("Firestore database successfully seeded with Guilogtrans default data!");
       }
     } catch (e) {
-      console.warn("Could not check/initialize Firestore (likely environment variables are missing or incorrect):", e);
+      console.warn("Could not check/initialize Firestore:", e);
     }
   }
 };

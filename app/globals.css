@@ -1,22 +1,27 @@
 @import "tailwindcss";
 
 @theme {
-  /* === CHARTE OFFICIELLE CFIG GUINÉE === */
-  --color-primary:    #1A3A6E;   /* bleu marine — navbar, hero, footer, titres */
-  --color-accent:     #2A8BC4;   /* bleu ciel — boutons CTA, badges, hover    */
-  --color-light:      #4B9FD5;   /* bleu clair — highlights, icônes, bordures  */
+  /* === CHARTE OFFICIELLE CABINET GUILOGTRANS === */
+  --color-primary:    #1A2F5E;   /* bleu marine — navbar, titles, primary CTAs */
+  --color-secondary:  #2E75B6;   /* bleu institutionnel — separators, hovers, accents */
+  --color-accent:     #F5A623;   /* or/ambre — secondary CTAs, badges, prices */
   --color-white:      #FFFFFF;
   --color-gray:       #F5F7FA;
+  --color-surface:    #F2F5F9;   /* background sections/cards */
   --color-foreground: #1A1A2E;
   --color-text-muted: #64748B;
 
+  /* Tricolor Guinean Accents */
+  --color-rouge:      #CE1126;
+  --color-or:         #FCD116;
+  --color-vert:       #009460;
+
   /* Legacy aliases (used in older components) */
-  --color-secondary:   #2A8BC4;
+  --color-light:       #2E75B6;
   --color-background:  #FFFFFF;
-  --color-surface:     #F5F7FA;
 
   --font-sans:    var(--font-dm-sans), ui-sans-serif, system-ui, sans-serif;
-  --font-heading: var(--font-dm-sans), ui-sans-serif, system-ui, sans-serif; /* changed from serif to sans as requested */
+  --font-heading: var(--font-dm-sans), ui-sans-serif, system-ui, sans-serif;
   --font-mono:    var(--font-space), ui-monospace, SFMono-Regular, monospace;
 }
 

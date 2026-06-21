@@ -77,11 +77,11 @@ export default function StudentSidebar() {
             <Link href="/" className="flex items-center gap-3 group">
               <img 
                 src="/logo.jpeg" 
-                alt="CFIG Guinée Logo" 
+                alt="Guilogtrans Logo" 
                 className="h-9 w-auto object-contain bg-white rounded-none border border-white/20 shadow-sm transition-all" 
               />
               <span className="text-base font-bold text-white tracking-tight group-hover:text-[var(--color-accent)] transition-colors">
-                CFIG Academy
+                Guilogtrans
               </span>
             </Link>
             {/* Close button inside sidebar on mobile */}

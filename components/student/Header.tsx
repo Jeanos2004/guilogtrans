@@ -42,7 +42,7 @@ export default function StudentHeader({
     },
     {
       id: 2,
-      sender: "Support CFIG Academy",
+      sender: "Support Guilogtrans",
       text: "Votre paiement Orange Money a bien été validé.",
       time: "Il y a 2 h",
       unread: false,
@@ -141,7 +141,7 @@ export default function StudentHeader({
         <div className="md:hidden flex items-center shrink-0">
           <img 
             src="/logo.jpeg" 
-            alt="CFIG Guinée Logo" 
+            alt="Guilogtrans Logo" 
             className="h-8 w-auto object-contain bg-white rounded-none border border-gray-200 shadow-sm" 
           />
         </div>

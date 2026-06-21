@@ -160,7 +160,7 @@ export default function StudentCoursePlayerPage() {
                     {activeLecture?.title || course.title}
                   </h1>
                   <span className="bg-blue-50 text-blue-600 text-[9px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-none border border-blue-200">
-                    Offert par CFIG Guinée
+                    Offert par le Cabinet Guilogtrans
                   </span>
                 </div>
                 <p className="text-[10px] text-gray-400 font-bold uppercase tracking-widest">
@@ -201,7 +201,7 @@ export default function StudentCoursePlayerPage() {
                     {activeLecture.title}
                   </h2>
                   <p className="text-xs text-blue-200/80 max-w-lg leading-relaxed">
-                    Cette formation se déroule en direct avec l'un de nos formateurs agréés CFIG. Cliquez sur le bouton ci-dessous pour rejoindre la salle de classe virtuelle interactive (Zoom / Google Meet).
+                    Cette formation se déroule en direct avec l'un de nos formateurs agréés Guilogtrans. Cliquez sur le bouton ci-dessous pour rejoindre la salle de classe virtuelle interactive (Zoom / Google Meet).
                   </p>
                 </div>
                 
@@ -389,7 +389,7 @@ export default function StudentCoursePlayerPage() {
                     {course.description}
                   </p>
                   <p className="text-gray-500 text-xs leading-relaxed mt-2">
-                    Ce programme professionnel de CFIG Guinée a été conçu par des experts métiers pour vous assurer une autonomie totale et une mise en pratique immédiate en entreprise.
+                    Ce programme professionnel du Cabinet Guilogtrans a été conçu par des experts métiers pour vous assurer une autonomie totale et une mise en pratique immédiate en entreprise.
                   </p>
                 </div>
               )}
@@ -466,7 +466,7 @@ export default function StudentCoursePlayerPage() {
                   <div className="p-4 text-xs text-gray-500 space-y-3 bg-white leading-relaxed animate-in fade-in slide-in-from-top-1 duration-200">
                     <h4 className="font-extrabold text-gray-900 uppercase tracking-wider text-[10px]">Description générale</h4>
                     <p>{course.description}</p>
-                    <p>Ce programme professionnel de CFIG Guinée a été conçu par des experts métiers pour vous assurer une autonomie totale et une mise en pratique immédiate en entreprise.</p>
+                    <p>Ce programme professionnel du Cabinet Guilogtrans a été conçu par des experts métiers pour vous assurer une autonomie totale et une mise en pratique immédiate en entreprise.</p>
                   </div>
                 )}
               </div>
@@ -585,7 +585,7 @@ export default function StudentCoursePlayerPage() {
                 <line x1="0" y1="50" x2="100" y2="50" stroke="#f1f5f9" strokeWidth="0.5" />
                 <line x1="0" y1="75" x2="100" y2="75" stroke="#f1f5f9" strokeWidth="0.5" />
                 
-                {/* Activity Fill path - flat solid color fill in compliance with CFIG rules */}
+                {/* Activity Fill path - flat solid color fill in compliance with Guilogtrans rules */}
                 <path
                   d="M 0 90 Q 20 60 40 70 T 80 30 T 100 10 L 100 100 L 0 100 Z"
                   fill="#3b82f6"

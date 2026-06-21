@@ -1100,7 +1100,7 @@ export default function AdminPage() {
             <div className="w-16 h-16 bg-[var(--color-accent)] mx-auto flex items-center justify-center font-heading font-black text-2xl tracking-wider text-white shadow-lg mb-4">
               CF
             </div>
-            <h1 className="text-2xl md:text-3xl font-heading font-bold">CFIG Guinée</h1>
+            <h1 className="text-2xl md:text-3xl font-heading font-bold">Cabinet Guilogtrans</h1>
             <p className="text-xs text-gray-300 mt-1 uppercase tracking-widest">Espace d'Administration</p>
           </div>
 
@@ -1111,7 +1111,7 @@ export default function AdminPage() {
                 type="email"
                 required
                 className="w-full bg-white/5 border border-white/20 px-4 py-3 text-sm text-white focus:outline-none focus:border-[var(--color-accent)] focus:ring-1 focus:ring-[var(--color-accent)] transition-all rounded-none"
-                placeholder="Ex: admin@cfigguinee.com"
+                placeholder="Ex: admin@guilogtrans.com"
                 value={username}
                 onChange={(e) => setUsername(e.target.value)}
               />
@@ -1182,9 +1182,9 @@ export default function AdminPage() {
               {/* Brand Header */}
               <div className="p-6 border-b border-white/10 flex items-center justify-between">
                 <div className="flex items-center gap-3">
-                  <img src="/logo.jpeg" alt="CFIG Guinée Logo" className="h-10 w-auto object-contain bg-white rounded-none border border-white/20 shadow-sm" />
+                  <img src="/logo.jpeg" alt="Guilogtrans Logo" className="h-10 w-auto object-contain bg-white rounded-none border border-white/20 shadow-sm" />
                   <div>
-                    <h1 className="font-heading font-bold text-sm tracking-wide leading-none text-white">CFIG Guinée</h1>
+                    <h1 className="font-heading font-bold text-sm tracking-wide leading-none text-white">Guilogtrans</h1>
                     <span className="text-[9px] text-[var(--color-light)] uppercase tracking-widest font-black mt-1.5 block">Console Admin</span>
                   </div>
                 </div>
@@ -1295,9 +1295,9 @@ export default function AdminPage() {
       <aside className="hidden lg:flex w-64 h-full bg-[var(--color-primary)] text-white flex-col flex-shrink-0 z-25 sticky top-0">
         {/* Brand header */}
         <div className="p-6 border-b border-white/10 flex items-center gap-3">
-          <img src="/logo.jpeg" alt="CFIG Guinée Logo" className="h-10 w-auto object-contain bg-white rounded-none border border-white/20 shadow-sm" />
+          <img src="/logo.jpeg" alt="Guilogtrans Logo" className="h-10 w-auto object-contain bg-white rounded-none border border-white/20 shadow-sm" />
           <div>
-            <h1 className="font-heading font-bold text-sm tracking-wide leading-none text-white">CFIG Guinée</h1>
+            <h1 className="font-heading font-bold text-sm tracking-wide leading-none text-white">Guilogtrans</h1>
             <span className="text-[9px] text-[var(--color-light)] uppercase tracking-widest font-black mt-1.5 block">Console Admin</span>
           </div>
         </div>
@@ -1417,7 +1417,7 @@ export default function AdminPage() {
                 {activeTab === "users" && "Utilisateurs Admin"}
                 {activeTab === "settings" && "Paramètres du Site"}
               </h2>
-              <p className="hidden md:block text-xs text-gray-500 mt-0.5">Bienvenue dans l'interface de contrôle du cabinet CFIG Guinée.</p>
+              <p className="hidden md:block text-xs text-gray-500 mt-0.5">Bienvenue dans l'interface de contrôle du Cabinet Guilogtrans.</p>
             </div>
           </div>
           <Link
@@ -2691,7 +2691,7 @@ export default function AdminPage() {
                           type="email"
                           required
                           className="w-full bg-gray-50 border border-gray-300 px-4 py-2 text-xs focus:outline-none focus:border-[var(--color-primary)] rounded-none"
-                          placeholder="admin@cfigguinee.com"
+                          placeholder="admin@guilogtrans.com"
                           value={newAdminEmail}
                           onChange={(e) => setNewAdminEmail(e.target.value)}
                         />

@@ -124,7 +124,7 @@ export default function StudentDashboardPage() {
   const currentLevel = Math.floor(xp / 500) + 1;
   const xpInCurrentLevel = xp % 500;
   const levelProgressPct = Math.round((xpInCurrentLevel / 500) * 100);
-  const rankTitles = ["Novice CFIG", "Praticien Apprenant", "Spécialiste de Gestion", "Expert Décisionnel", "Maître du Dashboard"];
+  const rankTitles = ["Novice Logistique", "Praticien Apprenant", "Spécialiste de Gestion", "Expert Décisionnel", "Maître du Dashboard"];
   const rankTitle = rankTitles[Math.min(currentLevel - 1, rankTitles.length - 1)];
 
   return (

@@ -1,158 +1,120 @@
 export const formationsData = [
   {
-    image: "/images/programmes/bureautique.jpg",
-    categorie: "Informatique Bureautique",
-    modules: [
-      { titre: "Initiation Bureautique", outils: ["Windows", "Word", "Excel", "PowerPoint"] },
-      { titre: "Excel Avancé", outils: ["Microsoft Excel"] }
-    ]
-  },
-  {
-    image: "/images/programmes/Gestion.jpg",
-    categorie: "Gestion",
-    modules: [
-      { titre: "Gestion Comptable", outils: ["Sage Comptabilité", "Excel"] },
-      { titre: "Gestion Commerciale", outils: ["Sage Gestion Commerciale", "Excel"] },
-      { titre: "Gestion de la Paie", outils: ["Sage Paie et RH", "Excel"] },
-      { titre: "Management RH – Auditeur Social", outils: ["Sage Paie et RH", "Excel"] },
-      { titre: "Responsable Administratif et Financier", outils: ["Excel"] }
-    ]
-  },
-  {
     image: "/images/programmes/logistique.jpg",
-    categorie: "Logistique et Transport",
+    categorie: "Logistique",
     modules: [
-      { titre: "Responsable Logistique", outils: ["Excel"] },
-      { titre: "Responsable Achat et Approvisionnement", outils: ["Excel"] },
-      { titre: "Gestionnaire de Stock", outils: ["Excel"] },
-      { titre: "Logistique Minière", outils: ["Excel"] }
+      { titre: "Gestion des stocks et approvisionnement", outils: ["Excel", "ERP"] },
+      { titre: "Logistique internationale & Incoterms", outils: ["Incoterms 2020", "Douane"] }
     ]
   },
   {
-    image: "/images/programmes/qhse.jpg",
-    categorie: "QHSE",
+    image: "/images/programmes/transport.jpg",
+    categorie: "Transport",
     modules: [
-      { titre: "Superviseur HSE", outils: [] }
+      { titre: "Optimisation des routes de transport", outils: ["Cartographie", "Excel"] },
+      { titre: "Sécurité routière et conduite professionnelle", outils: ["Sécurité", "Éco-conduite"] }
     ]
   },
   {
-    image: "/images/programmes/analyse.jpg",
-    categorie: "Analyse des Données",
+    image: "/images/programmes/douane.jpg",
+    categorie: "Douane",
     modules: [
-      { titre: "Tableau de bord avec Excel", outils: ["Excel", "PowerPivot", "PowerQuery"] },
-      { titre: "Tableau de bord avec PowerBI", outils: ["PowerBI Desktop", "PowerBI Services", "PowerBI Mobile", "PowerPivot", "PowerQuery"] },
-      { titre: "Collecte et Analyse des Données", outils: ["KoboCollect", "KoboToolbox"] }
+      { titre: "Réglementation douanière & transit", outils: ["Sydonia", "Transit"] }
     ]
   },
   {
-    image: "/images/programmes/communication.jpg",
-    categorie: "Communication Digitale",
+    image: "/images/programmes/supply.jpg",
+    categorie: "Supply Chain",
     modules: [
-      { titre: "Community Management", outils: ["Facebook", "WhatsApp Business", "Canva", "ChatGPT"] },
-      { titre: "Marketing Digital", outils: ["Facebook", "Instagram", "LinkedIn", "Wix", "Email Marketing", "Canva", "Filmora"] },
-      { titre: "Communication Institutionnelle", outils: [] }
-    ]
-  },
-  {
-    image: "/images/infographie.png",
-    categorie: "Infographie",
-    modules: [
-      { titre: "Conception de Visuels", outils: ["Adobe Photoshop", "Adobe Illustrator"] }
-    ]
-  },
-  {
-    image: "/images/suivi-evaluation.png",
-    categorie: "Suivi-Évaluation de Projets",
-    modules: [
-      { titre: "Montage Suivi et Évaluation des Projets", outils: ["MS Project", "KoboCollect", "SPSS"] }
+      { titre: "Management de la supply chain", outils: ["VSM", "S&OP"] }
     ]
   }
 ];
 
 export const statsData = [
-  { value: "1200+", label: "Apprenants formés" },
-  { value: "8", label: "Domaines de formation" },
-  { value: "10+", label: "Experts formateurs" },
-  { value: "95%", label: "De satisfaction" }
+  { value: "4", label: "Modes de transport" },
+  { value: "50+", label: "Formations dispensées" },
+  { value: "30+", label: "Entreprises accompagnées" },
+  { value: "500+", label: "Apprenants formés" }
 ];
 
 export const testimonialsData = [
   {
-    name: "Amadou Diallo",
-    role: "Responsable Logistique",
-    initials: "AD",
+    name: "Mamadou Diallo",
+    role: "Responsable Transport & Logistique",
+    initials: "MD",
     color: "bg-blue-100 text-blue-800",
-    text: "La formation en Logistique m'a permis d'optimiser les flux de mon entreprise. Les formateurs sont des experts de terrain.",
+    text: "La formation sur l'optimisation des routes et de la flotte de transport dispensée par Guilogtrans a permis à notre équipe de réduire de 15% nos coûts de carburant en seulement 3 mois.",
     rating: 5
   },
   {
-    name: "Fatoumata Camara",
-    role: "Comptable",
-    initials: "FC",
+    name: "Aissatou Sylla",
+    role: "Gestionnaire de Stock",
+    initials: "AS",
     color: "bg-amber-100 text-amber-800",
-    text: "Excellente formation sur Sage Comptabilité. J'ai pu mettre en pratique immédiatement ce que j'ai appris.",
+    text: "Une formation extrêmement pratique axée sur des cas concrets d'entrepôt. L'accompagnement post-formation m'a aidé à restructurer entièrement nos procédures d'inventaire.",
     rating: 5
   },
   {
-    name: "Mamadou Barry",
-    role: "Entrepreneur",
-    initials: "MB",
+    name: "Ibrahima Diallo",
+    role: "Directeur Général d'une PME Import/Export",
+    initials: "ID",
     color: "bg-green-100 text-green-800",
-    text: "L'accompagnement de CFIG pour notre transformation digitale a été un vrai succès.",
-    rating: 4
+    text: "Nous avons fait appel au cabinet Guilogtrans pour auditer notre chaîne d'approvisionnement. Les recommandations stratégiques ont été très pertinentes et rapidement applicables.",
+    rating: 5
   }
 ];
 
 export const teamData = [
   {
-    name: "Ousmane Condé",
-    role: "Directeur & Formateur Gestion",
-    initials: "OC",
+    name: "Ibrahima Keita",
+    role: "Directeur Associé & Expert Transport",
+    initials: "IK",
     image: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=400&h=400&fit=crop&crop=face",
     linkedin: "#"
   },
   {
-    name: "Aissatou Sylla",
-    role: "Formatrice Communication",
-    initials: "AS",
+    name: "Aissatou Diallo",
+    role: "Formatrice Gestion de Stock & Logistique",
+    initials: "AD",
     image: "https://images.unsplash.com/photo-1531123897727-8f129e1688ce?w=400&h=400&fit=crop&crop=face",
     linkedin: "#"
   },
   {
-    name: "Ibrahima Keita",
-    role: "Expert Logistique",
-    initials: "IK",
-    image: "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=400&h=400&fit=crop&crop=face",
+    name: "Mariam Sow",
+    role: "Consultante Supply Chain",
+    initials: "MS",
+    image: "https://images.unsplash.com/photo-1488426862026-3ee34a7d66df?w=400&h=400&fit=crop&crop=face",
     linkedin: "#"
   },
   {
-    name: "Mariam Sow",
-    role: "Consultante RH",
-    initials: "MS",
-    image: "https://images.unsplash.com/photo-1488426862026-3ee34a7d66df?w=400&h=400&fit=crop&crop=face",
+    name: "Alseny Diallo",
+    role: "Expert Transit & Réglementation Douanière",
+    initials: "AD",
+    image: "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=400&h=400&fit=crop&crop=face",
     linkedin: "#"
   }
 ];
 
 export const servicesData = [
   {
-    title: "Formation Professionnelle",
-    description: "Des programmes adaptés aux besoins réels des entreprises pour monter en compétences.",
-    icon: "GraduationCap"
-  },
-  {
-    title: "Consulting Stratégique",
-    description: "Accompagnement sur mesure pour optimiser vos processus et votre organisation.",
+    title: "Conseil Stratégique",
+    description: "Accompagnement sur mesure pour optimiser vos flux, réduire vos coûts et structurer votre chaîne logistique.",
     icon: "Briefcase"
   },
   {
-    title: "Implémentation Logicielles",
-    description: "Déploiement et paramétrage de solutions comme Sage, PowerBI.",
+    title: "Études & Audits",
+    description: "Analyses de processus, diagnostics d'entrepôt et modélisations mathématiques pour éclairer vos décisions.",
     icon: "Laptop"
   },
   {
-    title: "Support Continu",
-    description: "Un suivi post-formation ou post-déploiement pour garantir votre succès.",
+    title: "Formation Professionnelle",
+    description: "Programmes opérationnels et pratiques conçus pour renforcer les compétences de vos équipes logistiques.",
+    icon: "GraduationCap"
+  },
+  {
+    title: "Support Opérationnel",
+    description: "Assistance continue post-formation et post-audit pour garantir la mise en œuvre réussie des solutions.",
     icon: "LifeBuoy"
   }
 ];
