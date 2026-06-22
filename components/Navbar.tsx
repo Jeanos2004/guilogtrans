@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from "react";
 import Link from "next/link";
+import Image from "next/image";
 import { usePathname } from "next/navigation";
 import { Menu, X, MapPin, Package, Calendar, Phone, ArrowUpRight } from "lucide-react";
 import { cn } from "@/lib/utils";
@@ -75,10 +76,14 @@ export function Navbar() {
           <div className="flex items-center justify-between h-[80px]">
             {/* Logo */}
             <Link href="/" className="flex items-center gap-3 flex-shrink-0">
-              <div className="w-10 h-10 bg-[#CE1126] rounded-sm flex items-center justify-center transform hover:scale-105 transition-transform">
-                <ArrowUpRight className="w-6 h-6 text-[#0d2d38] stroke-[2.5]" />
-              </div>
-              <span className="text-3xl font-bold text-white tracking-tight">Guilog</span>
+              <Image 
+                src="/logo.png" 
+                alt="GuilogTrans Logo" 
+                width={50} 
+                height={50} 
+                className="w-10 h-15 rounded-sm object-cover transform hover:scale-105 transition-transform" 
+              />
+              <span className="text-3xl font-bold text-white tracking-tight">GuilogTrans</span>
             </Link>
 
             {/* Desktop menu & CTA */}
